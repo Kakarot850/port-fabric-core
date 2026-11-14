@@ -4,9 +4,9 @@
   "package": "net.p3pp3rf1y.sophisticatedcore.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "common.ItemContainerContentsMixin"
   ],
-  "client": [
-  ],
+  "client": [],
   "injectors": {
     "defaultRequire": 1
   }

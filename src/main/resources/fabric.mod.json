@@ -47,6 +47,11 @@
         "name": "Sophisticated Mods",
         "description": "Group of P3pp3rF1y's Sophisticated Mods"
       }
+    },
+    "loom:injected_interfaces": {
+      "net/minecraft/world/item/component/ItemContainerContents": [
+        "net/p3pp3rf1y/sophisticatedcore/extensions/item/component/SophisticatedItemContainerContents"
+      ]
     }
   }
 }
