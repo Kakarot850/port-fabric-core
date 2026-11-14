@@ -71,6 +71,10 @@ public final class ResourceHandlerUtil {
      * @return {@code true} if the {@link ResourceHandler} is full, {@code false} otherwise
      */
     public static <T extends Resource> boolean isFull(ResourceHandler<T> handler) {
+        // Port: ref-neoforge-core MixinResourceHandlerUtil
+        if (handler instanceof net.p3pp3rf1y.sophisticatedcore.inventory.IInsertBlockOverride insertBlockOverride) {
+            return insertBlockOverride.isInsertBlocked();
+        }
         int size = handler.size();
         for (int i = 0; i < size; i++) {
             if (handler.getAmountAsLong(i) < handler.getCapacityAsLong(i, handler.getResource(i))) {

@@ -17,6 +17,8 @@ import net.p3pp3rf1y.sophisticatedcore.client.init.ModParticles;
 import net.p3pp3rf1y.sophisticatedcore.fabric.client.network.ClientPayloadHandlers;
 import net.p3pp3rf1y.sophisticatedcore.init.ModFluids;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.StorageSoundHandler;
+import net.p3pp3rf1y.sophisticatedcore.fabric.client.event.RecipesReceivedEvent;
+import net.p3pp3rf1y.sophisticatedcore.util.RecipeHelper;
 
 /**
  * Fabric client entrypoint. Client event wiring from ref-neoforge-core's {@code ClientEventHandler} is ported
@@ -38,6 +40,11 @@ public class ClientEventHandler implements ClientModInitializer {
 		ClientTickEvents.END_LEVEL_TICK.register(StorageSoundHandler::tick);
 		ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> StorageSoundHandler.onWorldUnload());
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> StorageSoundHandler.onWorldUnload());
+		// NeoForge: ClientEventHandler::recipesReceived and (common bus) RecipeHelper::onRecipesUpdated on RecipesReceivedEvent.
+		// The map is set first so recipe change listeners see the new recipes.
+		RecipesReceivedEvent.registerClient();
+		RecipesReceivedEvent.EVENT.register(event -> RecipeHelper.setRecipes(event.getRecipeMap()));
+		RecipesReceivedEvent.EVENT.register(RecipeHelper::onRecipesUpdated);
 	}
 
 	/**

@@ -88,3 +88,5 @@ transitive-extendable method net/minecraft/client/gui/components/EditBox isEdita
 # --- fabric.transfer stand-ins (NeoForge AT entries for its transfer package) ---
 # PlayerInventoryWrapper reads the per-slot limit of equipment slots.
 transitive-accessible field net/minecraft/world/entity/EquipmentSlot countLimit I
+# RecipeHelper reads shaped recipe ingredients (NeoForge AT: public ShapedRecipe pattern).
+transitive-accessible field net/minecraft/world/item/crafting/ShapedRecipe pattern Lnet/minecraft/world/item/crafting/ShapedRecipePattern;

@@ -72,6 +72,9 @@
       ],
       "net/minecraft/world/item/ItemStack": [
         "net/p3pp3rf1y/sophisticatedcore/extensions/item/SophisticatedItemStack"
+      ],
+      "net/minecraft/world/item/crafting/RecipeManager": [
+        "net/p3pp3rf1y/sophisticatedcore/extensions/item/crafting/SophisticatedRecipeManager"
       ]
     }
   }

@@ -4,17 +4,20 @@
   "package": "net.p3pp3rf1y.sophisticatedcore.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "common.AllayMixin",
     "common.EntityCapabilityMixin",
     "common.FluidMixin",
     "common.ItemContainerContentsMixin",
     "common.ItemMixin",
     "common.ItemStackMixin",
     "common.LevelMixin",
+    "common.RecipeManagerMixin",
     "common.ReloadableServerResourcesMixin",
     "common.ServerPlayerMixin",
     "common.SlotMixin"
   ],
   "client": [
+    "client.ParrotMixin",
     "client.RegistryDataCollectorMixin",
     "client.ScreenMixin"
   ],

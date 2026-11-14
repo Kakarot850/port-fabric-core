@@ -1,0 +1,172 @@
+package net.p3pp3rf1y.sophisticatedcore.util;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.FuelValues;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.dimension.DimensionType;
+import org.jspecify.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiPredicate;
+import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.api.EnvType;
+
+public class WorldHelper {
+	private WorldHelper() {
+	}
+
+	private static final List<BiPredicate<Player, BlockPos>> ADDITIONAL_INTERACTION_CHECKS = new ArrayList<>();
+	private static final List<BiPredicate<Player, Entity>> ADDITIONAL_ENTITY_INTERACTION_CHECKS = new ArrayList<>();
+
+	public static void addAdditionalInteractionCheck(BiPredicate<Player, BlockPos> check) {
+		ADDITIONAL_INTERACTION_CHECKS.add(check);
+	}
+
+	public static void addAdditionalEntityInteractionCheck(BiPredicate<Player, Entity> check) {
+		ADDITIONAL_ENTITY_INTERACTION_CHECKS.add(check);
+	}
+
+	public static Optional<BlockEntity> getBlockEntity(@Nullable BlockGetter level, BlockPos pos) {
+		return getBlockEntity(level, pos, BlockEntity.class);
+	}
+
+	public static <T> Optional<T> getLoadedBlockEntity(@Nullable Level level, BlockPos pos, Class<T> teClass) {
+		if (level == null || !level.isInValidBounds(pos)) {
+			return Optional.empty();
+		}
+
+		ChunkPos chunkPos = ChunkPos.containing(pos);
+		LevelChunk chunk = level.getChunkSource().getChunkNow(chunkPos.x(), chunkPos.z());
+		if (chunk == null) {
+			return Optional.empty();
+		}
+
+		BlockEntity blockEntity = chunk.getBlockEntity(pos, LevelChunk.EntityCreationType.IMMEDIATE);
+		return teClass.isInstance(blockEntity) ? Optional.of(teClass.cast(blockEntity)) : Optional.empty();
+	}
+
+	public static <T> Optional<T> getBlockEntity(@Nullable BlockGetter level, BlockPos pos, Class<T> teClass) {
+		if (level == null) {
+			return Optional.empty();
+		}
+
+		BlockEntity be = level.getBlockEntity(pos);
+
+		if (teClass.isInstance(be)) {
+			return Optional.of(teClass.cast(be));
+		}
+
+		return Optional.empty();
+	}
+
+	public static void notifyBlockUpdate(BlockEntity tile) {
+		Level level = tile.getLevel();
+		if (level == null) {
+			return;
+		}
+		level.sendBlockUpdated(tile.getBlockPos(), tile.getBlockState(), tile.getBlockState(), 3);
+	}
+
+	public static FuelValues getFuelValues() {
+		if (!SophisticatedCore.isLogicalServerThread() && (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)) {
+			return ClientLevelHelper.getFuelValues();
+		}
+		MinecraftServer currentServer = SophisticatedCore.getCurrentServer();
+		if (currentServer == null) {
+			throw new IllegalArgumentException("Cannot get fuel values without a server instance.");
+		}
+		return currentServer.fuelValues();
+	}
+
+	public static void notifyBlockEntityUpdate(BlockEntity tile) {
+		notifyBlockUpdate(tile);
+		if (!(tile.getLevel() instanceof ServerLevel serverLevel)) {
+			return;
+		}
+
+		Packet<?> updatePacket = tile.getUpdatePacket();
+		if (updatePacket != null) {
+			serverLevel.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(tile.getBlockPos()), false)
+					.forEach(player -> player.connection.send(updatePacket));
+		}
+	}
+
+	public static List<BlockEntity> getBlockEntitiesInRange(Level level, BlockPos origin, int range) {
+		return getBlockEntitiesInRange(level, origin, range, BlockEntity.class);
+	}
+
+	public static <T> List<T> getBlockEntitiesInRange(Level level, BlockPos origin, int range, Class<T> beClass) {
+		List<T> out = new ArrayList<>();
+
+		int minX = origin.getX() - range;
+		int maxX = origin.getX() + range;
+		int minZ = origin.getZ() - range;
+		int maxZ = origin.getZ() + range;
+
+		DimensionType dim = level.dimensionType();
+		int minY = Math.max(origin.getY() - range, dim.minY());
+		int maxY = Math.min(origin.getY() + range, dim.minY() + dim.height() - 1);
+
+		int minCx = minX >> 4;
+		int maxCx = maxX >> 4;
+		int minCz = minZ >> 4;
+		int maxCz = maxZ >> 4;
+
+		long maxDist = (long) range * (long) range;
+
+		for (int cz = minCz; cz <= maxCz; cz++) {
+			for (int cx = minCx; cx <= maxCx; cx++) {
+				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
+				if (chunk == null) {
+					continue;
+				}
+
+				for (BlockEntity be : chunk.getBlockEntities().values()) {
+					if (be == null || be.isRemoved() || !beClass.isInstance(be)) {
+						continue;
+					}
+					BlockPos pos = be.getBlockPos();
+					int y = pos.getY();
+					if (y < minY || y > maxY)
+						continue;
+
+					long dx = (long) pos.getX() - origin.getX();
+					long dz = (long) pos.getZ() - origin.getZ();
+					long beDist = dx * dx + dz * dz;
+					if (beDist <= maxDist) {
+						out.add(beClass.cast(be));
+					}
+				}
+			}
+		}
+		return out;
+	}
+
+	public static boolean playerMayInteract(Player player, BlockPos pos) {
+		return playerMayInteract(player, player.level(), pos);
+	}
+
+	public static boolean playerMayInteract(Player player, Level level, BlockPos pos) {
+		if (level.isClientSide()) {
+			return true;
+		}
+		return (!(level instanceof ServerLevel serverLevel) || player.mayInteract(serverLevel, pos))
+				&& ADDITIONAL_INTERACTION_CHECKS.stream().allMatch(check -> check.test(player, pos));
+	}
+
+	public static boolean playerMayInteract(Player player, Entity entity) {
+		return ADDITIONAL_ENTITY_INTERACTION_CHECKS.stream().allMatch(check -> check.test(player, entity));
+	}
+}
