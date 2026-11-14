@@ -5,18 +5,25 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "common.AllayMixin",
+    "common.BlockEntityMixin",
     "common.EntityCapabilityMixin",
+    "common.EntityMixin",
     "common.FluidMixin",
     "common.ItemContainerContentsMixin",
     "common.ItemMixin",
     "common.ItemStackMixin",
+    "common.LevelChunkMixin",
     "common.LevelMixin",
     "common.RecipeManagerMixin",
     "common.ReloadableServerResourcesMixin",
+    "common.ResultSlotMixin",
+    "common.SavedDataStorageMixin",
     "common.ServerPlayerMixin",
     "common.SlotMixin"
   ],
   "client": [
+    "client.AbstractContainerScreenMixin",
+    "client.KeyMappingMixin",
     "client.ParrotMixin",
     "client.RegistryDataCollectorMixin",
     "client.ScreenMixin"

@@ -5,7 +5,12 @@ import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
+import net.p3pp3rf1y.sophisticatedcore.crafting.EnderLinkerClearRecipe;
+import net.p3pp3rf1y.sophisticatedcore.crafting.EnderLinkerEndpointRecipe;
 import net.p3pp3rf1y.sophisticatedcore.crafting.ItemEnabledCondition;
+import net.p3pp3rf1y.sophisticatedcore.crafting.UpgradeClearRecipe;
+import net.p3pp3rf1y.sophisticatedcore.crafting.UpgradeNextTierRecipe;
+import net.p3pp3rf1y.sophisticatedcore.fabric.registries.DeferredHolder;
 import net.p3pp3rf1y.sophisticatedcore.fabric.registries.DeferredRegister;
 
 public class ModRecipes {
@@ -17,8 +22,14 @@ public class ModRecipes {
 	// NeoForge: CONDITION_CODECS (NeoForgeRegistries.Keys.CONDITION_CODECS). Fabric registers resource condition types instead,
 	// see ITEM_ENABLED_CONDITION.
 
-	// TODO(port) pending: UPGRADE_NEXT_TIER_SERIALIZER, UPGRADE_CLEAR_SERIALIZER, ENDER_LINKER_ENDPOINT_SERIALIZER,
-	//  ENDER_LINKER_CLEAR_SERIALIZER. Their recipe classes are in the IStorageWrapper cycle (see PROGRESS.md).
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<UpgradeNextTierRecipe>> UPGRADE_NEXT_TIER_SERIALIZER = RECIPE_SERIALIZERS.register(
+			"upgrade_next_tier", () -> UpgradeNextTierRecipe.SERIALIZER);
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<UpgradeClearRecipe>> UPGRADE_CLEAR_SERIALIZER = RECIPE_SERIALIZERS.register(
+			"upgrade_clear", () -> UpgradeClearRecipe.SERIALIZER);
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<EnderLinkerEndpointRecipe>> ENDER_LINKER_ENDPOINT_SERIALIZER = RECIPE_SERIALIZERS.register(
+			"ender_linker_endpoint", () -> EnderLinkerEndpointRecipe.SERIALIZER);
+	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<EnderLinkerClearRecipe>> ENDER_LINKER_CLEAR_SERIALIZER = RECIPE_SERIALIZERS.register(
+			"ender_linker_clear", () -> EnderLinkerClearRecipe.SERIALIZER);
 
 	public static void registerHandlers() {
 		RECIPE_SERIALIZERS.register();

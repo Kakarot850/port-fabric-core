@@ -1,6 +1,10 @@
 package net.p3pp3rf1y.sophisticatedcore.extensions.item;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.Item;
 import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.item.ItemResource;
 
@@ -34,5 +38,13 @@ public interface SophisticatedItem {
 	 */
 	static void resetAllDefaultResources() {
 		BuiltInRegistries.ITEM.forEach(SophisticatedItem::sophisticatedCore_resetDefaultResource);
+	}
+
+	default int sophisticatedCore_getMaxStackSize(ItemStack stack) {
+		return stack.getOrDefault(DataComponents.MAX_STACK_SIZE, 1);
+	}
+
+	default InteractionResult sophisticatedCore_onItemUseFirst(ItemStack stack, UseOnContext context) {
+		return InteractionResult.PASS;
 	}
 }

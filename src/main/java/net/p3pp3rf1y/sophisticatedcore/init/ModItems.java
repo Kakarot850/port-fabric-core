@@ -1,5 +1,11 @@
 package net.p3pp3rf1y.sophisticatedcore.init;
 
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.world.item.Item;
+import net.p3pp3rf1y.sophisticatedcore.Config;
+import net.p3pp3rf1y.sophisticatedcore.fabric.registries.DeferredHolder;
+import net.p3pp3rf1y.sophisticatedcore.linkedstorage.EnderLinkerItem;
+
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -13,7 +19,7 @@ import java.util.function.Supplier;
 
 public final class ModItems {
 	private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, SophisticatedCore.MOD_ID);
-	// TODO(port) pending: ENDER_LINKER = ITEMS.register("ender_linker", EnderLinkerItem::new). linkedstorage/EnderLinkerItem
+	public static final DeferredHolder<Item, EnderLinkerItem> ENDER_LINKER = ITEMS.register("ender_linker", EnderLinkerItem::new);
 	//  is in the IStorageWrapper cycle (see PROGRESS.md).
 	public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB,
 			SophisticatedCore.MOD_ID);
@@ -22,7 +28,11 @@ public final class ModItems {
 			() -> FabricCreativeModeTab.builder().icon(() -> new ItemStack(ModFluids.XP_BUCKET.get())).title(Component.translatable("itemGroup.sophisticatedcore"))
 					.displayItems((featureFlags, output) -> {
 						output.accept(new ItemStack(ModFluids.XP_BUCKET.get()));
-						// TODO(port): with ENDER_LINKER, add it when Config.COMMON.enabledItems.isItemEnabled(ENDER_LINKER.get())
+						if (Config.COMMON.enabledItems.isItemEnabled(ENDER_LINKER.get())
+				&& (FabricLoader.getInstance().isModLoaded("sophisticatedbackpacks")
+				|| FabricLoader.getInstance().isModLoaded("sophisticatedstorage"))) {
+			output.accept(ENDER_LINKER.get());
+		}
 						//  && (sophisticatedbackpacks || sophisticatedstorage is loaded), as in ref-neoforge-core
 					}).build());
 

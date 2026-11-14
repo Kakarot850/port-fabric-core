@@ -1,5 +1,13 @@
 package net.p3pp3rf1y.sophisticatedcore.init;
 
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.crafting.Recipe;
+import net.p3pp3rf1y.sophisticatedcore.renderdata.RenderData;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.cooking.CookingLogic;
+
+import java.util.Map;
+
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
 import net.minecraft.core.UUIDUtil;
@@ -64,7 +72,8 @@ public class ModCoreDataComponents {
 	public static final DataComponentType<SortBy> SORT_BY = register("sort_by",
 			() -> new DataComponentType.Builder<SortBy>().persistent(SortBy.CODEC).networkSynchronized(SortBy.STREAM_CODEC).build());
 
-	// TODO(port) pending RENDER_DATA: needs RenderData (in the 176-file IStorageWrapper cycle)
+	public static final DataComponentType<RenderData> RENDER_DATA = register("render_data",
+			() -> new DataComponentType.Builder<RenderData>().persistent(RenderData.CODEC).networkSynchronized(RenderData.STREAM_CODEC).build());
 
 	public static final DataComponentType<Boolean> SHIFT_CLICK_INTO_STORAGE = register("shift_click_into_storage",
 			() -> new DataComponentType.Builder<Boolean>().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());
@@ -217,7 +226,9 @@ public class ModCoreDataComponents {
 	public static final DataComponentType<EntityMatch> ENTITY_MATCH = register("entity_match",
 			() -> new DataComponentType.Builder<EntityMatch>().persistent(EntityMatch.CODEC).networkSynchronized(EntityMatch.STREAM_CODEC).build());
 
-	// TODO(port) pending RECIPES_USED: needs CookingLogic.RECIPES_USED_CODEC / RECIPES_USED_STREAM_CODEC (in the IStorageWrapper cycle)
+	public static final DataComponentType<Map<ResourceKey<Recipe<?>>, Integer>> RECIPES_USED = register("recipes_used",
+			() -> new DataComponentType.Builder<Map<ResourceKey<Recipe<?>>, Integer>>()
+					.persistent(CookingLogic.RECIPES_USED_CODEC).networkSynchronized(CookingLogic.RECIPES_USED_STREAM_CODEC).build());
 
 	public static final DataComponentType<Float> STORED_XP = register("stored_xp",
 			() -> new DataComponentType.Builder<Float>().persistent(Codec.FLOAT).networkSynchronized(ByteBufCodecs.FLOAT).build());
@@ -235,6 +246,6 @@ public class ModCoreDataComponents {
 	 * that happen before the registries freeze.
 	 */
 	public static void register() {
-		// TODO(port): NeoForge also adds the alias render_info_tag -> render_data; add it together with RENDER_DATA
+		BuiltInRegistries.DATA_COMPONENT_TYPE.addAlias(SophisticatedCore.getIdentifier("render_info_tag"), SophisticatedCore.getIdentifier("render_data"));
 	}
 }

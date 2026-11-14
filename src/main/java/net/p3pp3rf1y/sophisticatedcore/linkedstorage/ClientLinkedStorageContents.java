@@ -1,0 +1,183 @@
+package net.p3pp3rf1y.sophisticatedcore.linkedstorage;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.p3pp3rf1y.sophisticatedcore.common.gui.SortBy;
+import net.p3pp3rf1y.sophisticatedcore.inventory.ContainerContents;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+public final class ClientLinkedStorageContents {
+	private static final long REQUEST_INTERVAL = 20;
+	private static final Map<UUID, Snapshot> SNAPSHOTS = new HashMap<>();
+	private static final Map<UUID, CompoundTag> HOST_DESCRIPTORS = new HashMap<>();
+	private static final Map<UUID, ClientContents> CONTENTS = new HashMap<>();
+	private static final Map<UUID, Long> LAST_REQUEST_TIMES = new HashMap<>();
+	private static final Set<UUID> UPDATED_GROUPS = new HashSet<>();
+	private static final Set<UUID> UPDATED_SETTINGS = new HashSet<>();
+
+	private ClientLinkedStorageContents() {
+	}
+
+	public static void updateHostDescriptor(UUID groupId, CompoundTag hostDescriptor) {
+		HOST_DESCRIPTORS.put(groupId, hostDescriptor.copy());
+	}
+
+	public static Optional<CompoundTag> getHostDescriptor(UUID groupId) {
+		return Optional.ofNullable(HOST_DESCRIPTORS.get(groupId)).map(CompoundTag::copy);
+	}
+
+	public static Optional<ILinkedStorageContents> getContents(UUID groupId) {
+		if (!SNAPSHOTS.containsKey(groupId)) {
+			return Optional.empty();
+		}
+		return Optional.of(CONTENTS.computeIfAbsent(groupId, ClientContents::new));
+	}
+
+	public static void updateContents(UUID groupId, long revision, ContainerContents contents, Component groupName, int inventorySlots, int upgradeSlots,
+			int columnsTaken) {
+		updateContents(groupId, revision, contents, groupName, inventorySlots, upgradeSlots, columnsTaken, SortBy.NAME);
+	}
+
+	public static void updateContents(UUID groupId, long revision, ContainerContents contents, Component groupName, int inventorySlots, int upgradeSlots,
+			int columnsTaken, SortBy sortBy) {
+		Snapshot snapshot = new Snapshot(contents.copy(), revision, groupName, inventorySlots, upgradeSlots, columnsTaken, sortBy);
+		SNAPSHOTS.put(groupId, snapshot);
+		ClientContents clientContents = CONTENTS.get(groupId);
+		if (clientContents != null) {
+			clientContents.update(snapshot);
+		}
+		UPDATED_GROUPS.add(groupId);
+	}
+
+	public static void updateSettings(UUID groupId, ContainerContents.SettingsData settings) {
+		Snapshot snapshot = SNAPSHOTS.get(groupId);
+		if (snapshot == null) {
+			return;
+		}
+		ContainerContents contents = snapshot.contents().copy();
+		Snapshot updated = new Snapshot(
+				new ContainerContents(contents.inventory(), contents.partitioner(), contents.upgrades(), settings.copy(), contents.tank()), snapshot.revision(),
+				snapshot.groupName(), snapshot.inventorySlots(), snapshot.upgradeSlots(), snapshot.columnsTaken(), snapshot.sortBy());
+		SNAPSHOTS.put(groupId, updated);
+		ClientContents clientContents = CONTENTS.get(groupId);
+		if (clientContents != null) {
+			clientContents.update(updated);
+		}
+		UPDATED_SETTINGS.add(groupId);
+	}
+
+	public static Optional<Component> getGroupName(UUID groupId) {
+		return Optional.ofNullable(SNAPSHOTS.get(groupId)).map(Snapshot::groupName);
+	}
+
+	public static Optional<Long> getRevision(UUID groupId) {
+		return Optional.ofNullable(SNAPSHOTS.get(groupId)).map(Snapshot::revision);
+	}
+
+	public static Optional<Integer> getInventorySlots(UUID groupId) {
+		return Optional.ofNullable(SNAPSHOTS.get(groupId)).map(Snapshot::inventorySlots);
+	}
+
+	public static Optional<Integer> getUpgradeSlots(UUID groupId) {
+		return Optional.ofNullable(SNAPSHOTS.get(groupId)).map(Snapshot::upgradeSlots);
+	}
+
+	public static Optional<Integer> getColumnsTaken(UUID groupId) {
+		return Optional.ofNullable(SNAPSHOTS.get(groupId)).map(Snapshot::columnsTaken);
+	}
+
+	public static boolean shouldRequestSnapshot(UUID groupId, long gameTime) {
+		Long lastRequestTime = LAST_REQUEST_TIMES.get(groupId);
+		if (lastRequestTime != null && lastRequestTime + REQUEST_INTERVAL >= gameTime) {
+			return false;
+		}
+		LAST_REQUEST_TIMES.put(groupId, gameTime);
+		return true;
+	}
+
+	public static boolean removeUpdatedGroup(UUID groupId) {
+		return UPDATED_GROUPS.remove(groupId);
+	}
+
+	public static boolean removeUpdatedSettings(UUID groupId) {
+		return UPDATED_SETTINGS.remove(groupId);
+	}
+
+	public static void clear() {
+		SNAPSHOTS.clear();
+		HOST_DESCRIPTORS.clear();
+		CONTENTS.clear();
+		LAST_REQUEST_TIMES.clear();
+		UPDATED_GROUPS.clear();
+		UPDATED_SETTINGS.clear();
+	}
+
+	private static final class ClientContents implements ILinkedStorageContents {
+		private final UUID groupId;
+		private final ContainerContents contents;
+		private Snapshot snapshot;
+
+		private ClientContents(UUID groupId) {
+			this.groupId = groupId;
+			snapshot = SNAPSHOTS.get(groupId);
+			contents = snapshot.contents().copy();
+		}
+
+		private void update(Snapshot snapshot) {
+			contents.reloadFrom(snapshot.contents());
+			this.snapshot = snapshot;
+		}
+
+		@Override
+		public UUID groupId() {
+			return groupId;
+		}
+
+		@Override
+		public ContainerContents getContents(UUID storageId) {
+			return contents;
+		}
+
+		@Override
+		public void setContents(UUID storageId, ContainerContents contents) {
+			updateContents(groupId, snapshot.revision(), contents, snapshot.groupName(), snapshot.inventorySlots(), snapshot.upgradeSlots(),
+					snapshot.columnsTaken(), snapshot.sortBy());
+		}
+
+		@Override
+		public void markChanged() {
+		}
+
+		@Override
+		public int getColumnsTaken() {
+			return snapshot.columnsTaken();
+		}
+
+		@Override
+		public void setColumnsTaken(int columnsTaken) {
+			updateContents(groupId, snapshot.revision(), contents, snapshot.groupName(), snapshot.inventorySlots(), snapshot.upgradeSlots(), columnsTaken,
+					snapshot.sortBy());
+		}
+
+		@Override
+		public SortBy getSortBy() {
+			return snapshot.sortBy();
+		}
+
+		@Override
+		public void setSortBy(SortBy sortBy) {
+			updateContents(groupId, snapshot.revision(), contents, snapshot.groupName(), snapshot.inventorySlots(), snapshot.upgradeSlots(),
+					snapshot.columnsTaken(), sortBy);
+		}
+	}
+
+	private record Snapshot(ContainerContents contents, long revision, Component groupName, int inventorySlots, int upgradeSlots, int columnsTaken,
+			SortBy sortBy) {
+	}
+}

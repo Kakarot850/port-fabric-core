@@ -1,5 +1,11 @@
 package net.p3pp3rf1y.sophisticatedcore;
 
+import net.fabricmc.fabric.api.resource.v1.DataResourceLoader;
+import net.p3pp3rf1y.sophisticatedcore.crafting.EnderLinkerEndpointRecipe;
+import net.p3pp3rf1y.sophisticatedcore.inventory.StorageWrapperRepository;
+import net.p3pp3rf1y.sophisticatedcore.settings.DatapackSettingsTemplateManager;
+import net.p3pp3rf1y.sophisticatedcore.util.RecipeHelper;
+
 import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -47,18 +53,21 @@ public class SophisticatedCore implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> currentServer = server);
 		ServerLifecycleEvents.SERVER_STARTED.register(SophisticatedCore::serverStarted);
 		ServerLifecycleEvents.SERVER_STOPPED.register(SophisticatedCore::serverStopped);
+		DataResourceLoader.get().registerReloadListener(DatapackSettingsTemplateManager.Loader.KEY, DatapackSettingsTemplateManager.Loader::new);
 	}
 
 	private static void serverStarted(MinecraftServer server) {
+		StorageWrapperRepository.clearCache();
 		ServerLevel world = server.getLevel(Level.OVERWORLD);
 		if (world != null) {
-			// TODO(port): StorageWrapperRepository.clearCache() once inventory/ is ported
 			Config.COMMON.saveIfChanged();
 		}
 	}
 
 	private static void serverStopped(MinecraftServer server) {
-		// TODO(port): StorageWrapperRepository.clearCache() and RecipeHelper.clearListeners() once inventory/ and util/RecipeHelper are ported
+		StorageWrapperRepository.clearCache();
+		RecipeHelper.clearListeners();
+		EnderLinkerEndpointRecipe.clearInFlightClaims();
 		currentServer = null;
 	}
 

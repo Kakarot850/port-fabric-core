@@ -67,6 +67,9 @@
       "net/minecraft/world/level/Level": [
         "net/p3pp3rf1y/sophisticatedcore/extensions/level/SophisticatedLevel"
       ],
+      "net/minecraft/world/level/block/entity/BlockEntity": [
+        "net/p3pp3rf1y/sophisticatedcore/extensions/block/entity/SophisticatedBlockEntity"
+      ],
       "net/minecraft/world/entity/Entity": [
         "net/p3pp3rf1y/sophisticatedcore/extensions/entity/SophisticatedEntity"
       ],
@@ -75,6 +78,12 @@
       ],
       "net/minecraft/world/item/crafting/RecipeManager": [
         "net/p3pp3rf1y/sophisticatedcore/extensions/item/crafting/SophisticatedRecipeManager"
+      ],
+      "net/minecraft/client/gui/screens/inventory/AbstractContainerScreen": [
+        "net/p3pp3rf1y/sophisticatedcore/extensions/client/gui/screens/inventory/SophisticatedAbstractContainerScreen"
+      ],
+      "net/minecraft/client/KeyMapping": [
+        "net/p3pp3rf1y/sophisticatedcore/extensions/client/SophisticatedKeyMapping"
       ]
     }
   }

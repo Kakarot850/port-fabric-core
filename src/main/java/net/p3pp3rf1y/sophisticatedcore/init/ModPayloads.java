@@ -1,5 +1,21 @@
 package net.p3pp3rf1y.sophisticatedcore.init;
 
+import net.p3pp3rf1y.sophisticatedcore.linkedstorage.LinkedStorageContentsPayload;
+import net.p3pp3rf1y.sophisticatedcore.linkedstorage.LinkedStorageSettingsPayload;
+import net.p3pp3rf1y.sophisticatedcore.linkedstorage.RequestLinkedStorageContentsPayload;
+import net.p3pp3rf1y.sophisticatedcore.network.RequestLinkerCraftingDiagnosticsPayload;
+import net.p3pp3rf1y.sophisticatedcore.network.SyncContainerStacksPayload;
+import net.p3pp3rf1y.sophisticatedcore.network.SyncDatapackSettingsTemplatePayload;
+import net.p3pp3rf1y.sophisticatedcore.network.SyncLinkerCraftingDiagnosticsPayload;
+import net.p3pp3rf1y.sophisticatedcore.network.SyncPlayerSettingsPayload;
+import net.p3pp3rf1y.sophisticatedcore.network.SyncRecentCraftedResultsPayload;
+import net.p3pp3rf1y.sophisticatedcore.network.SyncSlotChangeErrorPayload;
+import net.p3pp3rf1y.sophisticatedcore.network.SyncSlotStackPayload;
+import net.p3pp3rf1y.sophisticatedcore.network.SyncTemplateSettingsPayload;
+import net.p3pp3rf1y.sophisticatedcore.network.TransferFullSlotPayload;
+import net.p3pp3rf1y.sophisticatedcore.network.TransferItemsPayload;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.tank.TankClickPayload;
+
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import net.p3pp3rf1y.sophisticatedcore.fabric.network.registration.PayloadRegistrar;
 import net.p3pp3rf1y.sophisticatedcore.network.EmitConsumableClientParticlesAndSoundsPayload;
@@ -22,27 +38,27 @@ public class ModPayloads {
 	public static void registerPayloads() {
 		final PayloadRegistrar registrar = new PayloadRegistrar(SophisticatedCore.MOD_ID).versioned(SophisticatedCore.getNetworkProtocolVersion());
 		registrar.playToServer(SyncContainerClientDataPayload.TYPE, SyncContainerClientDataPayload.STREAM_CODEC, SyncContainerClientDataPayload::handlePayload);
-		// TODO(port) pending playToServer: TransferFullSlotPayload (IStorageWrapper cycle)
-		// TODO(port) pending playToClient: SyncContainerStacksPayload (IStorageWrapper cycle)
-		// TODO(port) pending playToClient: SyncSlotStackPayload (IStorageWrapper cycle)
-		// TODO(port) pending playToClient: SyncRecentCraftedResultsPayload (IStorageWrapper cycle)
-		// TODO(port) pending playToClient: SyncPlayerSettingsPayload (IStorageWrapper cycle)
+		registrar.playToServer(TransferFullSlotPayload.TYPE, TransferFullSlotPayload.STREAM_CODEC, TransferFullSlotPayload::handlePayload);
+		registrar.playToClient(SyncContainerStacksPayload.TYPE, SyncContainerStacksPayload.STREAM_CODEC, SyncContainerStacksPayload::handlePayload);
+		registrar.playToClient(SyncSlotStackPayload.TYPE, SyncSlotStackPayload.STREAM_CODEC, SyncSlotStackPayload::handlePayload);
+		registrar.playToClient(SyncRecentCraftedResultsPayload.TYPE, SyncRecentCraftedResultsPayload.STREAM_CODEC, SyncRecentCraftedResultsPayload::handlePayload);
+		registrar.playToClient(SyncPlayerSettingsPayload.TYPE, SyncPlayerSettingsPayload.STREAM_CODEC, SyncPlayerSettingsPayload::handlePayload);
 		registrar.playToClient(PlayDiscPayload.TYPE, PlayDiscPayload.STREAM_CODEC, PlayDiscPayload::handlePayload);
 		registrar.playToClient(StopDiscPlaybackPayload.TYPE, StopDiscPlaybackPayload.STREAM_CODEC, StopDiscPlaybackPayload::handlePayload);
-		// TODO(port) pending playToServer: TankClickPayload (IStorageWrapper cycle)
-		// TODO(port) pending playToServer: TransferItemsPayload (IStorageWrapper cycle)
-		// TODO(port) pending playToClient: SyncTemplateSettingsPayload (IStorageWrapper cycle)
+		registrar.playToServer(TankClickPayload.TYPE, TankClickPayload.STREAM_CODEC, TankClickPayload::handlePayload);
+		registrar.playToServer(TransferItemsPayload.TYPE, TransferItemsPayload.STREAM_CODEC, TransferItemsPayload::handlePayload);
+		registrar.playToClient(SyncTemplateSettingsPayload.TYPE, SyncTemplateSettingsPayload.STREAM_CODEC, SyncTemplateSettingsPayload::handlePayload);
 		registrar.playToClient(SyncAdditionalSlotInfoPayload.TYPE, SyncAdditionalSlotInfoPayload.STREAM_CODEC, SyncAdditionalSlotInfoPayload::handlePayload);
 		registrar.playToClient(SyncEmptySlotIconsPayload.TYPE, SyncEmptySlotIconsPayload.STREAM_CODEC, SyncEmptySlotIconsPayload::handlePayload);
-		// TODO(port) pending playToClient: SyncSlotChangeErrorPayload (IStorageWrapper cycle)
-		// TODO(port) pending playToClient: SyncDatapackSettingsTemplatePayload (IStorageWrapper cycle)
+		registrar.playToClient(SyncSlotChangeErrorPayload.TYPE, SyncSlotChangeErrorPayload.STREAM_CODEC, SyncSlotChangeErrorPayload::handlePayload);
+		registrar.playToClient(SyncDatapackSettingsTemplatePayload.TYPE, SyncDatapackSettingsTemplatePayload.STREAM_CODEC, SyncDatapackSettingsTemplatePayload::handlePayload);
 		registrar.playToClient(EmitConsumableClientParticlesAndSoundsPayload.TYPE, EmitConsumableClientParticlesAndSoundsPayload.STREAM_CODEC,
 				EmitConsumableClientParticlesAndSoundsPayload::handlePayload);
 		registrar.playToClient(SyncBlockHighlightsPayload.TYPE, SyncBlockHighlightsPayload.STREAM_CODEC, SyncBlockHighlightsPayload::handlePayload);
-		// TODO(port) pending playToServer: RequestLinkerCraftingDiagnosticsPayload (IStorageWrapper cycle)
-		// TODO(port) pending playToClient: SyncLinkerCraftingDiagnosticsPayload (IStorageWrapper cycle)
-		// TODO(port) pending playToServer: RequestLinkedStorageContentsPayload (IStorageWrapper cycle)
-		// TODO(port) pending playToClient: LinkedStorageContentsPayload (IStorageWrapper cycle)
-		// TODO(port) pending playToClient: LinkedStorageSettingsPayload (IStorageWrapper cycle)
+		registrar.playToServer(RequestLinkerCraftingDiagnosticsPayload.TYPE, RequestLinkerCraftingDiagnosticsPayload.STREAM_CODEC, RequestLinkerCraftingDiagnosticsPayload::handlePayload);
+		registrar.playToClient(SyncLinkerCraftingDiagnosticsPayload.TYPE, SyncLinkerCraftingDiagnosticsPayload.STREAM_CODEC, SyncLinkerCraftingDiagnosticsPayload::handlePayload);
+		registrar.playToServer(RequestLinkedStorageContentsPayload.TYPE, RequestLinkedStorageContentsPayload.STREAM_CODEC, RequestLinkedStorageContentsPayload::handlePayload);
+		registrar.playToClient(LinkedStorageContentsPayload.TYPE, LinkedStorageContentsPayload.STREAM_CODEC, LinkedStorageContentsPayload::handlePayload);
+		registrar.playToClient(LinkedStorageSettingsPayload.TYPE, LinkedStorageSettingsPayload.STREAM_CODEC, LinkedStorageSettingsPayload::handlePayload);
 	}
 }

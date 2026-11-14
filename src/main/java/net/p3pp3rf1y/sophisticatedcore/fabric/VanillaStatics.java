@@ -9,7 +9,13 @@ import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import org.jspecify.annotations.Nullable;
+
+import com.mojang.serialization.Codec;
+
+import java.util.function.Supplier;
 
 /**
  * Static members NeoForge 26.1.2 patches into vanilla classes (interface injection can only add instance methods).
@@ -28,6 +34,15 @@ public final class VanillaStatics {
 	public static final ContextMap EMPTY_CONTEXT_MAP = new ContextMap.Builder().create(EMPTY_CONTEXT_KEY_SET);
 
 	private VanillaStatics() {}
+
+	/**
+	 * NeoForge's 3-argument {@code SavedDataType} constructor: no data fixer ({@code null} {@code dataFixType}, which
+	 * {@code mixin.common.SavedDataStorageMixin} skips on load, as NeoForge does).
+	 */
+	@SuppressWarnings("DataFlowIssue")
+	public static <T extends SavedData> SavedDataType<T> savedDataType(Identifier id, Supplier<T> constructor, Codec<T> codec) {
+		return new SavedDataType<>(id, constructor, codec, null);
+	}
 
 	/**
 	 * NeoForge {@code DyeColor#getTag()}: the {@code c:dyes/<color>} item tag.

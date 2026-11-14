@@ -1,5 +1,7 @@
 package net.p3pp3rf1y.sophisticatedcore.extensions.entity;
 
+import net.minecraft.nbt.CompoundTag;
+
 import net.minecraft.world.entity.Entity;
 import net.p3pp3rf1y.sophisticatedcore.fabric.capabilities.EntityCapability;
 import org.jspecify.annotations.Nullable;
@@ -16,5 +18,9 @@ public interface SophisticatedEntity {
 
 	default <T> @Nullable T sophisticatedCore_getCapability(EntityCapability<T, @Nullable Void> capability) {
 		return capability.getCapability((Entity) this, null);
+	}
+
+	default CompoundTag sophisticatedCore_getCustomData() {
+		return new CompoundTag();
 	}
 }

@@ -26,6 +26,7 @@ transitive-accessible method net/minecraft/data/recipes/ShapelessRecipeBuilder <
 
 # --- ItemStack / components ---
 transitive-accessible field net/minecraft/world/item/ItemStack components Lnet/minecraft/core/component/PatchedDataComponentMap;
+transitive-accessible field net/minecraft/world/item/BucketItem content Lnet/minecraft/world/level/material/Fluid;
 transitive-accessible class net/minecraft/world/item/component/ItemContainerContents$Slot
 transitive-accessible method net/minecraft/world/item/component/ItemContainerContents$Slot <init> (ILnet/minecraft/world/item/ItemStackTemplate;)V
 transitive-accessible method net/minecraft/world/item/component/ItemContainerContents fromSlots (Ljava/util/List;)Lnet/minecraft/world/item/component/ItemContainerContents;
@@ -34,6 +35,7 @@ transitive-accessible method net/minecraft/world/item/component/ItemContainerCon
 # --- Entities / server ---
 transitive-accessible field net/minecraft/world/entity/item/ItemEntity pickupDelay I
 transitive-accessible field net/minecraft/world/entity/item/ItemEntity INFINITE_PICKUP_DELAY I
+transitive-accessible method net/minecraft/world/entity/ExperienceOrb setValue (I)V
 transitive-accessible method net/minecraft/world/entity/monster/zombie/ZombieVillager startConverting (Ljava/util/UUID;I)V
 transitive-accessible field net/minecraft/server/level/ServerPlayerGameMode isDestroyingBlock Z
 
@@ -90,3 +92,8 @@ transitive-extendable method net/minecraft/client/gui/components/EditBox isEdita
 transitive-accessible field net/minecraft/world/entity/EquipmentSlot countLimit I
 # RecipeHelper reads shaped recipe ingredients (NeoForge AT: public ShapedRecipe pattern).
 transitive-accessible field net/minecraft/world/item/crafting/ShapedRecipe pattern Lnet/minecraft/world/item/crafting/ShapedRecipePattern;
+# --- NeoForge ATs needed by the IStorageWrapper cycle (neoforge-26.1.2.53-beta-userdev ats/accesstransformer.cfg) ---
+# StorageScreenBase / SettingsScreen iterate the screen's renderables.
+transitive-accessible field net/minecraft/client/gui/screens/Screen renderables Ljava/util/List;
+# StorageContainerMenuBase closes the container for the player.
+transitive-accessible method net/minecraft/world/entity/player/Player closeContainer ()V

@@ -1,0 +1,39 @@
+package net.p3pp3rf1y.sophisticatedcore.linkedstorage;
+
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.p3pp3rf1y.sophisticatedcore.common.gui.SortBy;
+import net.p3pp3rf1y.sophisticatedcore.inventory.ContainerContents;
+
+public interface ILinkedStorageEndpointAdapter<E> {
+	Identifier factoryId();
+
+	default boolean acceptsHostFactory(Identifier hostFactoryId) {
+		return LinkedStorageHostFactories.areCompatible(factoryId(), hostFactoryId);
+	}
+
+	default boolean isCompatible(ServerLevel level, E endpoint, LinkedStorageHostDescriptor hostDescriptor) {
+		return true;
+	}
+
+	default Compatibility getCompatibility(ServerLevel level, E endpoint, LinkedStorageHostDescriptor hostDescriptor) {
+		return isCompatible(level, endpoint, hostDescriptor) ? Compatibility.COMPATIBLE : Compatibility.INCOMPATIBLE;
+	}
+
+	LinkedStorageHostDescriptor createHostDescriptor(ServerLevel level, E endpoint);
+
+	ContainerContents copyCanonicalContents(ServerLevel level, E endpoint);
+
+	default SortBy getSortBy(ServerLevel level, E endpoint) {
+		return SortBy.NAME;
+	}
+
+	void bindEndpoint(ServerLevel level, E endpoint, LinkedStorageEndpointData endpointData);
+
+	default void onEndpointLinked(ServerLevel level, E endpoint) {
+	}
+
+	enum Compatibility {
+		COMPATIBLE, INCOMPATIBLE, HAS_CONTENTS
+	}
+}
