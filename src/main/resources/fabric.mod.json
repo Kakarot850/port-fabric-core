@@ -60,6 +60,9 @@
       ],
       "net/minecraft/world/level/material/Fluid": [
         "net/p3pp3rf1y/sophisticatedcore/extensions/level/material/SophisticatedFluid"
+      ],
+      "net/minecraft/client/gui/screens/Screen": [
+        "net/p3pp3rf1y/sophisticatedcore/extensions/client/gui/screens/SophisticatedScreen"
       ]
     }
   }

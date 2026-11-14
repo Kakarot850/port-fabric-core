@@ -12,7 +12,8 @@
     "common.SlotMixin"
   ],
   "client": [
-    "client.RegistryDataCollectorMixin"
+    "client.RegistryDataCollectorMixin",
+    "client.ScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
