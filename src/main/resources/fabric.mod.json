@@ -63,6 +63,15 @@
       ],
       "net/minecraft/client/gui/screens/Screen": [
         "net/p3pp3rf1y/sophisticatedcore/extensions/client/gui/screens/SophisticatedScreen"
+      ],
+      "net/minecraft/world/level/Level": [
+        "net/p3pp3rf1y/sophisticatedcore/extensions/level/SophisticatedLevel"
+      ],
+      "net/minecraft/world/entity/Entity": [
+        "net/p3pp3rf1y/sophisticatedcore/extensions/entity/SophisticatedEntity"
+      ],
+      "net/minecraft/world/item/ItemStack": [
+        "net/p3pp3rf1y/sophisticatedcore/extensions/item/SophisticatedItemStack"
       ]
     }
   }

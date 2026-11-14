@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
+import net.p3pp3rf1y.sophisticatedcore.fabric.capabilities.ItemCapability;
 import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.RangedResourceHandler;
 import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.ResourceHandler;
 import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.TransferPreconditions;
@@ -32,10 +33,10 @@ import org.jspecify.annotations.Nullable;
  * such that the current item resource and amount can be read,
  * and the stored item can be changed.
  *
- * <p>This interface is primarily used as the context type {@code C} for {@code ItemCapability item capabilities}.
+ * <p>This interface is primarily used as the context type {@code C} for {@linkplain ItemCapability item capabilities}.
  * This allows the returned capability instance to modify the current item or even swap out the item entirely,
  * for example to replace an empty bucket by a filled bucket.
- * Use the {@code getCapability(ItemCapability)} method to query a capability for the item referenced by an item access.
+ * Use the {@link #getCapability(ItemCapability)} method to query a capability for the item referenced by an item access.
  */
 public interface ItemAccess {
     /**
@@ -133,6 +134,17 @@ public interface ItemAccess {
     @ApiStatus.NonExtendable
     default ItemAccess oneByOne() {
         return new OneByOneItemAccess(this);
+    }
+
+    /**
+     * Retrieves a capability from this item location.
+     *
+     * @implNote This method is a convenient shorthand for {@code location.getResource().toStack().getCapability(capability, location)}.
+     */
+    @Nullable
+    @ApiStatus.NonExtendable
+    default <T> T getCapability(ItemCapability<T, ItemAccess> capability) {
+        return capability.getCapability(getResource().toStack(), this);
     }
 
     /**

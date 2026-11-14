@@ -9,6 +9,7 @@
 package net.p3pp3rf1y.sophisticatedcore.fabric.transfer.energy;
 
 import com.google.common.primitives.Ints;
+import net.p3pp3rf1y.sophisticatedcore.fabric.capabilities.Capabilities;
 import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.TransferPreconditions;
 import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.transaction.SnapshotJournal;
 import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.transaction.Transaction;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
  * A handler for the transfer and storage of energy.
  *
  * <p>This capability interface is used for NeoForge's energy system,
- * see the exposed capabilities in {@code Capabilities.EnergyHandler}.
+ * see the exposed capabilities in {@linkplain Capabilities.EnergyHandler}.
  *
  * <p>This interface can be also be used for other energy systems,
  * provided that they register a capability under a different name.

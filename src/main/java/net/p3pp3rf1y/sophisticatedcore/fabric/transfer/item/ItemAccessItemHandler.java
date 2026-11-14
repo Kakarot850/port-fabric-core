@@ -14,6 +14,8 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.p3pp3rf1y.sophisticatedcore.fabric.capabilities.ICapabilityProvider;
+import net.p3pp3rf1y.sophisticatedcore.fabric.capabilities.RegisterCapabilitiesEvent;
 import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.ItemAccessResourceHandler;
 import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.ResourceHandler;
 import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.access.ItemAccess;
@@ -23,7 +25,7 @@ import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.access.ItemAccess;
  * The stacks are stored in a {@link ItemContainerContents} data component.
  * <p>
  * To use this class, register a new {@link DataComponentType} which holds an {@link ItemContainerContents} for your item.
- * Then reference that component from your {@code ICapabilityProvider} passed to {@code RegisterCapabilitiesEvent#registerItem} to create an instance of this class.
+ * Then reference that component from your {@link ICapabilityProvider} passed to {@link RegisterCapabilitiesEvent#registerItem} to create an instance of this class.
  */
 public class ItemAccessItemHandler extends ItemAccessResourceHandler<ItemResource> {
     protected final Item validItem;

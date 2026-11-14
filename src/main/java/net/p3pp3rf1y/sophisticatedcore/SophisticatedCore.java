@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.fml.config.ModConfig;
 import net.p3pp3rf1y.sophisticatedcore.common.CommonEventHandler;
+import net.p3pp3rf1y.sophisticatedcore.fabric.capabilities.Capabilities;
 import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.init.ModItems;
 import org.apache.logging.log4j.LogManager;
@@ -39,6 +40,8 @@ public class SophisticatedCore implements ModInitializer {
 		Config.COMMON.initListeners();
 		ModCoreDataComponents.register();
 		ModItems.register();
+		// NeoForge registers capabilities through RegisterCapabilitiesEvent; the Fabric bridges and vanilla providers are set up here.
+		Capabilities.register();
 
 		// NeoForge: ServerLifecycleHooks tracks the server; Fabric has no equivalent, so it is tracked here (as in ref-fabric-core).
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> currentServer = server);
