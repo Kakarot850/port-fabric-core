@@ -51,6 +51,15 @@
     "loom:injected_interfaces": {
       "net/minecraft/world/item/component/ItemContainerContents": [
         "net/p3pp3rf1y/sophisticatedcore/extensions/item/component/SophisticatedItemContainerContents"
+      ],
+      "net/minecraft/world/inventory/Slot": [
+        "net/p3pp3rf1y/sophisticatedcore/extensions/inventory/SophisticatedSlot"
+      ],
+      "net/minecraft/world/item/Item": [
+        "net/p3pp3rf1y/sophisticatedcore/extensions/item/SophisticatedItem"
+      ],
+      "net/minecraft/world/level/material/Fluid": [
+        "net/p3pp3rf1y/sophisticatedcore/extensions/level/material/SophisticatedFluid"
       ]
     }
   }
