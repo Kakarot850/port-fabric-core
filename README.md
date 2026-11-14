@@ -1,9 +1,7 @@
-# Example Mod
+# Sophisticated Core — Fabric port (Minecraft 26.1.2)
 
-## Setup
+A private, personal-use port of P3pp3rF1y's Sophisticated Core to Fabric for Minecraft 26.1.2.
+It is not an official release. It is not for redistribution.
 
-For setup instructions, please see the [Fabric Documentation page](https://docs.fabricmc.net/develop/getting-started/creating-a-project#setting-up) related to the IDE that you are using.
-
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+- Licence: see [LICENSE](LICENSE). Sophisticated Core is © P3pp3rF1y, All Rights Reserved.
+- Port status and the next step: see `../PROGRESS.md`.
