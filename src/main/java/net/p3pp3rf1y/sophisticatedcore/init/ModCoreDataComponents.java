@@ -12,6 +12,7 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.crafting.Recipe;
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import net.p3pp3rf1y.sophisticatedcore.common.gui.SortBy;
+import net.p3pp3rf1y.sophisticatedcore.fabric.fluids.SimpleFluidContent;
 import net.p3pp3rf1y.sophisticatedcore.linkedstorage.EnderLinkPendingCraftData;
 import net.p3pp3rf1y.sophisticatedcore.linkedstorage.EnderLinkerTargetData;
 import net.p3pp3rf1y.sophisticatedcore.linkedstorage.LinkedStorageEndpointData;
@@ -128,7 +129,9 @@ public class ModCoreDataComponents {
 	public static final DataComponentType<Boolean> PICKUP_XP = register("pickup_xp",
 			() -> new DataComponentType.Builder<Boolean>().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());
 
-	// TODO(port) pending FLUID_FILTERS: needs SimpleFluidContent stand-in (fluid slice)
+	public static final DataComponentType<List<SimpleFluidContent>> FLUID_FILTERS = register("fluid_filters",
+			() -> new DataComponentType.Builder<List<SimpleFluidContent>>().persistent(Codec.list(SimpleFluidContent.CODEC))
+					.networkSynchronized(SimpleFluidContent.STREAM_CODEC.apply(ByteBufCodecs.list())).build());
 
 	public static final DataComponentType<Boolean> IS_INPUT = register("is_input",
 			() -> new DataComponentType.Builder<Boolean>().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());
@@ -146,7 +149,9 @@ public class ModCoreDataComponents {
 			() -> new DataComponentType.Builder<ResourceKey<Recipe<?>>>().persistent(ResourceKey.codec(Registries.RECIPE))
 					.networkSynchronized(ResourceKey.streamCodec(Registries.RECIPE)).build());
 
-	// TODO(port) pending FLUID_CONTENTS: needs SimpleFluidContent stand-in (fluid slice)
+	public static final DataComponentType<SimpleFluidContent> FLUID_CONTENTS = register("fluid_contents",
+			() -> new DataComponentType.Builder<SimpleFluidContent>().persistent(SimpleFluidContent.CODEC).networkSynchronized(SimpleFluidContent.STREAM_CODEC)
+					.build());
 
 	@Deprecated
 	public static final DataComponentType<Boolean> LEGACY_SHOULD_VOID_OVERFLOW = register("should_void_overflow",
