@@ -1,0 +1,41 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "sophisticatedcore:item_enabled",
+      "itemRegistryName": "sophisticatedcore:ender_linker"
+    },
+    {
+      "condition": "fabric:or",
+      "values": [
+        {
+          "condition": "fabric:all_mods_loaded",
+          "values": [
+            "sophisticatedbackpacks"
+          ]
+        },
+        {
+          "condition": "fabric:all_mods_loaded",
+          "values": [
+            "sophisticatedstorage"
+          ]
+        }
+      ]
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:blaze_rod",
+    "E": "minecraft:ender_pearl",
+    "O": "minecraft:obsidian"
+  },
+  "pattern": [
+    "OEO",
+    "BOB",
+    "OEO"
+  ],
+  "result": {
+    "count": 1,
+    "id": "sophisticatedcore:ender_linker"
+  }
+}

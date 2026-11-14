@@ -1,0 +1,17 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "particle": "minecraft:item/bucket",
+    "fluid": "sophisticatedcore:item/xp_bucket_fluid"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 7.48],
+      "to": [16, 16, 8.52],
+      "faces": {
+        "north": { "uv": [16, 0, 0, 16], "texture": "#fluid" },
+        "south": { "uv": [0, 0, 16, 16], "texture": "#fluid" }
+      }
+    }
+  ]
+}
