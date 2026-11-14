@@ -9,6 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.fml.config.ModConfig;
+import net.p3pp3rf1y.sophisticatedcore.common.CommonEventHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
@@ -23,6 +24,7 @@ public class SophisticatedCore implements ModInitializer {
 	private static String networkProtocolVersion;
 	@Nullable
 	private static MinecraftServer currentServer = null;
+	public final CommonEventHandler commonEventHandler = new CommonEventHandler();
 
 	@Override
 	public void onInitialize() {
@@ -31,6 +33,7 @@ public class SophisticatedCore implements ModInitializer {
 				.orElse("1");
 		ConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.COMMON, Config.COMMON_SPEC);
 		ConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
+		commonEventHandler.registerHandlers();
 		Config.COMMON.initListeners();
 
 		// NeoForge: ServerLifecycleHooks tracks the server; Fabric has no equivalent, so it is tracked here (as in ref-fabric-core).
