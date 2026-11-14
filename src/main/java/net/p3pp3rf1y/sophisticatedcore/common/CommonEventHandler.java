@@ -2,6 +2,7 @@ package net.p3pp3rf1y.sophisticatedcore.common;
 
 import net.p3pp3rf1y.sophisticatedcore.init.ModFluids;
 import net.p3pp3rf1y.sophisticatedcore.init.ModParticles;
+import net.p3pp3rf1y.sophisticatedcore.init.ModPayloads;
 import net.p3pp3rf1y.sophisticatedcore.init.ModRecipes;
 
 public class CommonEventHandler {
@@ -9,7 +10,8 @@ public class CommonEventHandler {
 		ModFluids.registerHandlers();
 		ModParticles.registerParticles();
 		ModRecipes.registerHandlers();
-		// TODO(port): ModPayloads.registerPayloads and the NeoForge.EVENT_BUS listeners
+		ModPayloads.registerPayloads();
+		// TODO(port): the NeoForge.EVENT_BUS listeners
 		//  (server tick end, datapack sync/recipes updated, storage sounds, magnet, fake player, login/logout, ender link crafted)
 		//  are wired in as their subsystems are ported; see PROGRESS.md.
 	}

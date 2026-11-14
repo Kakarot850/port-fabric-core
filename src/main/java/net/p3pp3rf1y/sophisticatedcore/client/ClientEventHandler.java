@@ -2,6 +2,9 @@ package net.p3pp3rf1y.sophisticatedcore.client;
 
 import fuzs.forgeconfigapiport.fabric.api.v5.client.ConfigScreenFactoryRegistry;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderingRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.color.block.BlockTintSources;
@@ -11,7 +14,9 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import net.p3pp3rf1y.sophisticatedcore.client.init.ModParticles;
+import net.p3pp3rf1y.sophisticatedcore.fabric.client.network.ClientPayloadHandlers;
 import net.p3pp3rf1y.sophisticatedcore.init.ModFluids;
+import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.StorageSoundHandler;
 
 /**
  * Fabric client entrypoint. Client event wiring from ref-neoforge-core's {@code ClientEventHandler} is ported
@@ -27,6 +32,12 @@ public class ClientEventHandler implements ClientModInitializer {
 		}
 		ModParticles.registerFactories();
 		registerFluidModels();
+		// NeoForge registers clientbound handlers with the payloads (ModPayloads); Fabric needs the client entrypoint.
+		ClientPayloadHandlers.register(SophisticatedCore.MOD_ID);
+		// NeoForge.EVENT_BUS: StorageSoundHandler::tick (LevelTickEvent.Post), StorageSoundHandler::onWorldUnload (LevelEvent.Unload)
+		ClientTickEvents.END_LEVEL_TICK.register(StorageSoundHandler::tick);
+		ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> StorageSoundHandler.onWorldUnload());
+		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> StorageSoundHandler.onWorldUnload());
 	}
 
 	/**
