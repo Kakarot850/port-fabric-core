@@ -21,6 +21,9 @@
     ],
     "client": [
       "net.p3pp3rf1y.sophisticatedcore.client.ClientEventHandler"
+    ],
+    "jei_mod_plugin": [
+      "net.p3pp3rf1y.sophisticatedcore.compat.recipeviewers.jei.CoreJeiPlugin"
     ]
   },
   "mixins": [

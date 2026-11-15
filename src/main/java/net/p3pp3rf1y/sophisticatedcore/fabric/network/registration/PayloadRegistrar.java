@@ -46,6 +46,10 @@ public class PayloadRegistrar {
 		return new PayloadRegistrar(modId, version);
 	}
 
+	public PayloadRegistrar optional() {
+		return this;
+	}
+
 	public String getVersion() {
 		return version;
 	}

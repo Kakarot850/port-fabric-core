@@ -18,7 +18,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.fml.config.ModConfig;
 import net.p3pp3rf1y.sophisticatedcore.common.CommonEventHandler;
+import net.p3pp3rf1y.sophisticatedcore.compat.CompatRegistry;
 import net.p3pp3rf1y.sophisticatedcore.fabric.capabilities.Capabilities;
+import net.p3pp3rf1y.sophisticatedcore.init.ModCompat;
 import net.p3pp3rf1y.sophisticatedcore.init.ModCoreDataComponents;
 import net.p3pp3rf1y.sophisticatedcore.init.ModItems;
 import org.apache.logging.log4j.LogManager;
@@ -46,6 +48,8 @@ public class SophisticatedCore implements ModInitializer {
 		ConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.CLIENT, Config.CLIENT_SPEC);
 		commonEventHandler.registerHandlers();
 		Config.COMMON.initListeners();
+		ModCompat.register();
+		CompatRegistry.getRegistry(MOD_ID).initCompats();
 		ModCoreDataComponents.register();
 		ModItems.register();
 		// NeoForge registers capabilities through RegisterCapabilitiesEvent; the Fabric bridges and vanilla providers are set up here.
@@ -66,6 +70,7 @@ public class SophisticatedCore implements ModInitializer {
 			}
 		});
 		DataResourceLoader.get().registerReloadListener(DatapackSettingsTemplateManager.Loader.KEY, DatapackSettingsTemplateManager.Loader::new);
+		CompatRegistry.getRegistry(MOD_ID).setupCompats();
 	}
 
 	private static void serverStarted(MinecraftServer server) {

@@ -95,5 +95,6 @@ transitive-accessible field net/minecraft/world/item/crafting/ShapedRecipe patte
 # --- NeoForge ATs needed by the IStorageWrapper cycle (neoforge-26.1.2.53-beta-userdev ats/accesstransformer.cfg) ---
 # StorageScreenBase / SettingsScreen iterate the screen's renderables.
 transitive-accessible field net/minecraft/client/gui/screens/Screen renderables Ljava/util/List;
+transitive-accessible method net/minecraft/client/gui/screens/Screen addRenderableWidget (Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;
 # StorageContainerMenuBase closes the container for the player.
 transitive-accessible method net/minecraft/world/entity/player/Player closeContainer ()V
