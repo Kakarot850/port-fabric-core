@@ -96,7 +96,7 @@ public class CraftingUpgradeTab extends UpgradeSettingsTab<CraftingUpgradeContai
 				if (visible && isMouseOver(mouseX, mouseY)) {
 					List<ClientTooltipComponent> list = GuiHelper.gatherTooltipComponents(getTooltip(), mouseX, guiGraphics.guiWidth(),
 							guiGraphics.guiHeight(), minecraft.font);
-					guiGraphics.tooltip(minecraft.font, list, mouseX, mouseY, LEFT_SIDE_TOOLTIP_POSITIONER, null);
+					guiGraphics.tooltip(minecraft.font, list, mouseX, mouseY, LEFT_SIDE_TOOLTIP_POSITIONER, null, false);
 				}
 			}
 		};

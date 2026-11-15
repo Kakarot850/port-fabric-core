@@ -54,7 +54,7 @@ import net.p3pp3rf1y.sophisticatedcore.init.ModFluids;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
 import net.p3pp3rf1y.sophisticatedcore.upgrades.jukebox.StorageSoundHandler;
 import net.p3pp3rf1y.sophisticatedcore.util.RecipeHelper;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLScancode;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -68,9 +68,9 @@ public class ClientEventHandler implements ClientModInitializer {
 	public static final KeyMapping SORT_KEYBIND = new KeyMapping(TranslationHelper.INSTANCE.translKeybind("sort"),
 			InputConstants.Type.MOUSE, MIDDLE_BUTTON, SOPHISTICATEDCORE_CATEGORY);
 	public static final KeyMapping TRANSFER_TO_STORAGE_KEYBIND = new KeyMapping(TranslationHelper.INSTANCE.translKeybind("transfer_to_storage"),
-			InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_LEFT_BRACKET, SOPHISTICATEDCORE_CATEGORY);
+			InputConstants.Type.KEYBOARD, SDLScancode.SDL_SCANCODE_LEFTBRACKET, SOPHISTICATEDCORE_CATEGORY);
 	public static final KeyMapping TRANSFER_TO_INVENTORY_KEYBIND = new KeyMapping(TranslationHelper.INSTANCE.translKeybind("transfer_to_inventory"),
-			InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_RIGHT_BRACKET, SOPHISTICATEDCORE_CATEGORY);
+			InputConstants.Type.KEYBOARD, SDLScancode.SDL_SCANCODE_RIGHTBRACKET, SOPHISTICATEDCORE_CATEGORY);
 
 	@Override
 	public void onInitializeClient() {

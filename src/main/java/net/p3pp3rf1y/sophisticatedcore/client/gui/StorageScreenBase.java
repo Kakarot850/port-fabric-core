@@ -51,7 +51,7 @@ import net.p3pp3rf1y.sophisticatedcore.upgrades.crafting.ICraftingUIPart;
 import net.p3pp3rf1y.sophisticatedcore.util.CountAbbreviator;
 import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLScancode;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -1281,17 +1281,17 @@ public abstract class StorageScreenBase<S extends StorageContainerMenuBase<?>> e
 	@Override
 	public boolean keyPressed(KeyEvent event) {
 		if (modalOverlay != null) {
-			if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
+			if (event.key() == SDLScancode.SDL_SCANCODE_ESCAPE) {
 				setModalOverlay(null);
 				return true;
 			}
 			modalOverlay.keyPressed(event);
 			return true;
 		}
-		if (event.key() == GLFW.GLFW_KEY_ESCAPE && getFocused() instanceof TextBox && clearFocusedWidget()) {
+		if (event.key() == SDLScancode.SDL_SCANCODE_ESCAPE && getFocused() instanceof TextBox && clearFocusedWidget()) {
 			return true;
 		}
-		if (event.key() == GLFW.GLFW_KEY_ESCAPE && getFocused() instanceof WidgetBase) {
+		if (event.key() == SDLScancode.SDL_SCANCODE_ESCAPE && getFocused() instanceof WidgetBase) {
 			clearFocusedWidget();
 		}
 		return super.keyPressed(event);

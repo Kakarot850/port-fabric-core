@@ -11,6 +11,7 @@ package net.p3pp3rf1y.sophisticatedcore.fabric.transfer.item;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -232,7 +233,7 @@ public final class PlayerInventoryWrapper extends VanillaContainerWrapper {
                 while (remainder > 0) {
                     int dropped = Math.min(maxStackSize, remainder);
                     // Port: NeoForge fires ItemTossEvent here (CommonHooks.onPlayerTossEvent); Fabric has no such event.
-                    inventory.player.drop(dropInfo.resource.toStack(dropped), dropInfo.dropAround, dropInfo.includeThrowerName);
+                    inventory.player.drop(dropInfo.resource.toStack(dropped), dropInfo.dropAround, dropInfo.includeThrowerName ? Prediction.PREDICTED : Prediction.SERVER_ONLY);
                     remainder -= dropped;
                 }
             }

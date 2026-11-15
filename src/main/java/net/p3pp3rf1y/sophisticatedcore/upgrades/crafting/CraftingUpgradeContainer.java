@@ -1,6 +1,7 @@
 package net.p3pp3rf1y.sophisticatedcore.upgrades.crafting;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.util.Prediction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -106,7 +107,7 @@ public class CraftingUpgradeContainer extends UpgradeContainerBase<CraftingUpgra
 								remainingItemStack.grow(recipeInputStack.getCount());
 								craftMatrix.setItem(i, remainingItemStack);
 							} else if (!player.getInventory().add(remainingItemStack)) {
-								player.drop(remainingItemStack, false);
+								player.drop(remainingItemStack, false, Prediction.PREDICTED);
 							}
 						}
 						remaininItemsIndex++;
@@ -114,7 +115,7 @@ public class CraftingUpgradeContainer extends UpgradeContainerBase<CraftingUpgra
 				}
 
 				if (!remainingStack.isEmpty()) {
-					player.drop(remainingStack, false);
+					player.drop(remainingStack, false, Prediction.PREDICTED);
 				}
 
 				if (matchedCraftingRecipes.isEmpty() && player.level().isClientSide()) {
@@ -126,7 +127,7 @@ public class CraftingUpgradeContainer extends UpgradeContainerBase<CraftingUpgra
 				for (int j = remaininItemsIndex; j < remainingItems.size(); j++) {
 					ItemStack remaining = remainingItems.get(j);
 					if (!remaining.isEmpty()) {
-						player.drop(remaining, false);
+						player.drop(remaining, false, Prediction.PREDICTED);
 					}
 				}
 				SophisticatedCore.LOGGER

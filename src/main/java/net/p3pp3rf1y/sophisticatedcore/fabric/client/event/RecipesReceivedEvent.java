@@ -1,14 +1,19 @@
 package net.p3pp3rf1y.sophisticatedcore.fabric.client.event;
 
+import com.mojang.serialization.Lifecycle;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.RegistrationInfo;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.p3pp3rf1y.sophisticatedcore.fabric.network.payload.RecipeContentPayload;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -45,10 +50,15 @@ public class RecipesReceivedEvent {
 			return;
 		}
 		registered = true;
-		ClientPlayNetworking.registerGlobalReceiver(RecipeContentPayload.TYPE, (payload, context) ->
-				EVENT.invoker().onRecipesReceived(new RecipesReceivedEvent(payload.recipeTypes(), RecipeMap.create(payload.recipes()))));
+		ClientPlayNetworking.registerGlobalReceiver(RecipeContentPayload.TYPE, (payload, context) -> {
+			MappedRegistry<Recipe<?>> registry = new MappedRegistry<>(Registries.RECIPE, Lifecycle.stable());
+			for (RecipeHolder<?> holder : payload.recipes()) {
+				registry.register(holder.id(), holder.value(), RegistrationInfo.BUILT_IN);
+			}
+			EVENT.invoker().onRecipesReceived(new RecipesReceivedEvent(payload.recipeTypes(), RecipeMap.create(registry)));
+		});
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) ->
-				client.execute(() -> EVENT.invoker().onRecipesReceived(new RecipesReceivedEvent(Set.of(), RecipeMap.create(List.of())))));
+				client.execute(() -> EVENT.invoker().onRecipesReceived(new RecipesReceivedEvent(Set.of(), RecipeMap.EMPTY))));
 	}
 
 	/**

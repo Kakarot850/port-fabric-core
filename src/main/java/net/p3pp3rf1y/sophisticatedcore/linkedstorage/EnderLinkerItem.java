@@ -1,6 +1,7 @@
 package net.p3pp3rf1y.sophisticatedcore.linkedstorage;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.util.Prediction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -136,7 +137,7 @@ public class EnderLinkerItem extends ItemBase {
 			}
 			linker.shrink(1);
 			if (!player.getInventory().add(boundLinker)) {
-				player.drop(boundLinker, false);
+				player.drop(boundLinker, false, Prediction.PREDICTED);
 			}
 			playLinkFeedback(level, player, blockPos);
 			return LinkedStorageService.LinkResult.SUCCESS;

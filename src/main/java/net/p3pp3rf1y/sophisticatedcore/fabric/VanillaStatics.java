@@ -31,7 +31,7 @@ public final class VanillaStatics {
 	/**
 	 * NeoForge {@code ContextMap.EMPTY}.
 	 */
-	public static final ContextMap EMPTY_CONTEXT_MAP = new ContextMap.Builder().create(EMPTY_CONTEXT_KEY_SET);
+	public static final ContextMap EMPTY_CONTEXT_MAP = ContextMap.EMPTY;
 
 	private VanillaStatics() {}
 

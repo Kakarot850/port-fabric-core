@@ -1,18 +1,26 @@
 package net.p3pp3rf1y.sophisticatedcore.util;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -20,8 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.api.EnvType;
 
 public class WorldHelper {
 	private WorldHelper() {
@@ -79,15 +85,20 @@ public class WorldHelper {
 		level.sendBlockUpdated(tile.getBlockPos(), tile.getBlockState(), tile.getBlockState(), 3);
 	}
 
-	public static FuelValues getFuelValues() {
-		if (!SophisticatedCore.isLogicalServerThread() && (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT)) {
-			return ClientLevelHelper.getFuelValues();
+	public static int getFuelBurnTime(ItemStack fuel) {
+		CookingFuel cookingFuel = fuel.get(DataComponents.COOKING_FUEL);
+		if (cookingFuel == null) {
+			return 0;
 		}
 		MinecraftServer currentServer = SophisticatedCore.getCurrentServer();
 		if (currentServer == null) {
-			throw new IllegalArgumentException("Cannot get fuel values without a server instance.");
+			// Client-side filter previews cannot resolve server-owned context providers.
+			return cookingFuel.burnTime() instanceof ResolvableInt.Constant constant ? constant.value() : 1;
 		}
-		return currentServer.fuelValues();
+		ServerLevel level = currentServer.overworld();
+		LootContext context = new LootContext.Builder(
+				new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.ZERO).create(LootContextParamSets.CHEST)).create(Optional.empty());
+		return cookingFuel.burnTime().get(context, 0);
 	}
 
 	public static void notifyBlockEntityUpdate(BlockEntity tile) {

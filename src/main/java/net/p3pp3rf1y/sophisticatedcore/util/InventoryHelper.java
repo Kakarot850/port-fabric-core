@@ -3,6 +3,7 @@ package net.p3pp3rf1y.sophisticatedcore.util;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AtomicDouble;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.Prediction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -109,7 +110,7 @@ public class InventoryHelper {
 			}
 		}
 		if (!ret.isEmpty()) {
-			player.drop(ret, true);
+			player.drop(ret, true, Prediction.PREDICTED);
 		}
 	}
 

@@ -21,6 +21,7 @@ import net.blay09.mods.craftingtweaks.crafting.CraftingContext;
 import net.blay09.mods.craftingtweaks.crafting.CraftingOperation;
 import net.blay09.mods.craftingtweaks.crafting.IngredientToken;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.util.Prediction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -144,7 +145,7 @@ public class CraftingUpgradeTweakProvider implements CraftingGridProvider {
 					player.getInventory().add(returnStack);
 					craftMatrix.setItem(slotIndex, returnStack.getCount() == 0 ? ItemStack.EMPTY : returnStack);
 					if (returnStack.getCount() > 0 && forced) {
-						player.drop(returnStack, false);
+						player.drop(returnStack, false, Prediction.PREDICTED);
 						craftMatrix.setItem(slotIndex, ItemStack.EMPTY);
 					}
 				}

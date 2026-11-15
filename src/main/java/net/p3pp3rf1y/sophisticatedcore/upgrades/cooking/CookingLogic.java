@@ -336,7 +336,7 @@ public class CookingLogic<T extends AbstractCookingRecipe> {
 	}
 
 	private static <T extends AbstractCookingRecipe> int getBurnTime(ItemStack fuel, RecipeType<T> recipeType, float burnTimeModifier) {
-		return (int) (fuel.sophisticatedCore_getBurnTime(recipeType, WorldHelper.getFuelValues()) * burnTimeModifier);
+		return (int) (WorldHelper.getFuelBurnTime(fuel) * burnTimeModifier);
 	}
 
 	public ItemStack getCookOutput() {

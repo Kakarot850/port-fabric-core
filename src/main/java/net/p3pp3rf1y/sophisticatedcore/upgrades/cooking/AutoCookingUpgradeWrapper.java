@@ -57,12 +57,12 @@ public class AutoCookingUpgradeWrapper<W extends AutoCookingUpgradeWrapper<W, U,
 				ModCoreDataComponents.INPUT_FILTER_ATTRIBUTES);
 		inputFilterLogic.setAllowByDefault(true);
 		fuelFilterLogic = new FilterLogic(upgrade, upgradeSaveHandler, autoCookingUpgradeConfig.fuelFilterSlots.get(),
-				s -> s.sophisticatedCore_getBurnTime(recipeType, WorldHelper.getFuelValues()) > 0, ModCoreDataComponents.FUEL_FILTER_ATTRIBUTES);
+				s -> WorldHelper.getFuelBurnTime(s) > 0, ModCoreDataComponents.FUEL_FILTER_ATTRIBUTES);
 		fuelFilterLogic.setAllowByDefault(true);
 		fuelFilterLogic.setEmptyAllowListMatchesEverything();
 
 		isValidInput = s -> validInput.test(s) && inputFilterLogic.matchesFilter(s);
-		isValidFuel = s -> s.sophisticatedCore_getBurnTime(recipeType, WorldHelper.getFuelValues()) > 0 && fuelFilterLogic.matchesFilter(s);
+		isValidFuel = s -> WorldHelper.getFuelBurnTime(s) > 0 && fuelFilterLogic.matchesFilter(s);
 		cookingLogic = new CookingLogic<>(upgrade, upgradeSaveHandler, isValidFuel, isValidInput, autoCookingUpgradeConfig, recipeType, burnTimeModifier);
 	}
 
@@ -103,7 +103,7 @@ public class AutoCookingUpgradeWrapper<W extends AutoCookingUpgradeWrapper<W, U,
 		}
 
 		ItemStack fuel = cookingLogic.getFuel();
-		if (!fuel.isEmpty() && fuel.sophisticatedCore_getBurnTime(recipeType, WorldHelper.getFuelValues()) <= 0) {
+		if (!fuel.isEmpty() && WorldHelper.getFuelBurnTime(fuel) <= 0) {
 			resource = ItemResource.of(fuel);
 			inserted = InventoryHelper.insert(inventory, resource, fuel.getCount());
 			if (inserted > 0) {
