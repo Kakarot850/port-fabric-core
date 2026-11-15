@@ -8,12 +8,14 @@ import net.p3pp3rf1y.sophisticatedcore.util.RecipeHelper;
 
 import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.fml.config.ModConfig;
 import net.p3pp3rf1y.sophisticatedcore.common.CommonEventHandler;
 import net.p3pp3rf1y.sophisticatedcore.fabric.capabilities.Capabilities;
@@ -53,6 +55,16 @@ public class SophisticatedCore implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> currentServer = server);
 		ServerLifecycleEvents.SERVER_STARTED.register(SophisticatedCore::serverStarted);
 		ServerLifecycleEvents.SERVER_STOPPED.register(SophisticatedCore::serverStopped);
+		ServerChunkEvents.CHUNK_LOAD.register((serverWorld, chunk, isNew) -> {
+			for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+				blockEntity.sophisticatedCore_safeLoad();
+			}
+		});
+		ServerChunkEvents.CHUNK_UNLOAD.register((serverWorld, chunk) -> {
+			for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+				blockEntity.sophisticatedCore_safeUnload();
+			}
+		});
 		DataResourceLoader.get().registerReloadListener(DatapackSettingsTemplateManager.Loader.KEY, DatapackSettingsTemplateManager.Loader::new);
 	}
 

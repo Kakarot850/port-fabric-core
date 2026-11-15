@@ -3,6 +3,7 @@ package net.p3pp3rf1y.sophisticatedcore.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import fuzs.forgeconfigapiport.fabric.api.v5.client.ConfigScreenFactoryRegistry;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -91,6 +92,16 @@ public class ClientEventHandler implements ClientModInitializer {
 		ClientTickEvents.END_CLIENT_TICK.register(client -> ItemStackKey.clearCache());
 		ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register((client, level) -> StorageSoundHandler.onWorldUnload());
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> StorageSoundHandler.onWorldUnload());
+		ClientChunkEvents.CHUNK_LOAD.register((clientWorld, chunk) -> {
+			for (net.minecraft.world.level.block.entity.BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+				blockEntity.sophisticatedCore_safeLoad();
+			}
+		});
+		ClientChunkEvents.CHUNK_UNLOAD.register((clientWorld, chunk) -> {
+			for (net.minecraft.world.level.block.entity.BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+				blockEntity.sophisticatedCore_safeUnload();
+			}
+		});
 		// NeoForge: ClientEventHandler::recipesReceived and (common bus) RecipeHelper::onRecipesUpdated on RecipesReceivedEvent.
 		// The map is set first so recipe change listeners see the new recipes.
 		RecipesReceivedEvent.registerClient();

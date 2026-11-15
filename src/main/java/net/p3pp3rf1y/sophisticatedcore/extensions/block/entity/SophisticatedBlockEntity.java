@@ -10,4 +10,25 @@ public interface SophisticatedBlockEntity {
 
 	default void sophisticatedCore_onChunkUnloaded() {
 	}
+
+	default boolean sophisticatedCore_isLoaded() {
+		return false;
+	}
+
+	default void sophisticatedCore_setLoaded(boolean loaded) {
+	}
+
+	default void sophisticatedCore_safeLoad() {
+		if (!sophisticatedCore_isLoaded()) {
+			sophisticatedCore_setLoaded(true);
+			sophisticatedCore_onLoad();
+		}
+	}
+
+	default void sophisticatedCore_safeUnload() {
+		if (sophisticatedCore_isLoaded()) {
+			sophisticatedCore_setLoaded(false);
+			sophisticatedCore_onChunkUnloaded();
+		}
+	}
 }

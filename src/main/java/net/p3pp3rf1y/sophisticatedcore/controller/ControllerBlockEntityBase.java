@@ -88,7 +88,7 @@ public abstract class ControllerBlockEntityBase extends BlockEntity implements R
 			linkedBlocks.add(linkedPos);
 			setChanged();
 
-			WorldHelper.getBlockEntity(level, linkedPos, ILinkable.class).ifPresent(l -> {
+			WorldHelper.getLoadedBlockEntity(level, linkedPos, ILinkable.class).ifPresent(l -> {
 				if (l.connectLinkedSelf()) {
 					Set<BlockPos> positionsToCheck = new LinkedHashSet<>();
 					positionsToCheck.add(linkedPos);
@@ -1047,7 +1047,7 @@ public abstract class ControllerBlockEntityBase extends BlockEntity implements R
 
 	private void rebuildLinkedBlockConnections() {
 		for (BlockPos linkedPos : new ArrayList<>(linkedBlocks)) {
-			WorldHelper.getBlockEntity(level, linkedPos, ILinkable.class).ifPresent(l -> {
+			WorldHelper.getLoadedBlockEntity(level, linkedPos, ILinkable.class).ifPresent(l -> {
 				if (l.connectLinkedSelf()) {
 					Set<BlockPos> positionsToCheck = new LinkedHashSet<>();
 					positionsToCheck.add(linkedPos);

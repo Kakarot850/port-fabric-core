@@ -24,21 +24,14 @@ public abstract class LevelChunkMixin {
 	@Inject(method = "addAndRegisterBlockEntity(Lnet/minecraft/world/level/block/entity/BlockEntity;)V", at = @At("TAIL"))
 	private void sophisticatedCore_onAddAndRegisterBlockEntity(BlockEntity blockEntity, CallbackInfo ci) {
 		if (isInLevel()) {
-			blockEntity.sophisticatedCore_onLoad();
-		}
-	}
-
-	@Inject(method = "registerAllBlockEntitiesAfterLevelLoad()V", at = @At("TAIL"))
-	private void sophisticatedCore_onRegisterAllBlockEntitiesAfterLevelLoad(CallbackInfo ci) {
-		for (BlockEntity blockEntity : getBlockEntities().values()) {
-			blockEntity.sophisticatedCore_onLoad();
+			blockEntity.sophisticatedCore_safeLoad();
 		}
 	}
 
 	@Inject(method = "clearAllBlockEntities()V", at = @At("HEAD"))
 	private void sophisticatedCore_onClearAllBlockEntities(CallbackInfo ci) {
 		for (BlockEntity blockEntity : getBlockEntities().values()) {
-			blockEntity.sophisticatedCore_onChunkUnloaded();
+			blockEntity.sophisticatedCore_safeUnload();
 		}
 	}
 }
