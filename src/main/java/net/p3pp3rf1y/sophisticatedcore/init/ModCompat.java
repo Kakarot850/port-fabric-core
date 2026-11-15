@@ -18,13 +18,14 @@ public class ModCompat {
 
 	public static void register() {
 		CompatRegistry registry = CompatRegistry.getRegistry(SophisticatedCore.MOD_ID);
-		registry.registerCompat(new CompatInfo(CompatModIds.JEI), JeiCompat::new);
+		// Extra Supplier<Supplier<ICompat>> indirection prevents JVM from resolving optional compat class method handles when unloaded.
+		registry.registerCompat(new CompatInfo(CompatModIds.JEI), () -> JeiCompat::new);
 		// EMI & REI skipped: no 26.1.2 Fabric EMI build, and REI is excluded upstream in ref-neoforge-core.
-		registry.registerCompat(new CompatInfo(CompatModIds.CRAFTING_TWEAKS), CraftingTweaksCompat::new);
-		registry.registerCompat(new CompatInfo(CompatModIds.TRASH_SLOT), TrashSlotCompat::new);
-		registry.registerCompat(new CompatInfo(CompatModIds.MOUSE_TWEAKS), MouseTweaksCompat::new);
-		registry.registerCompat(new CompatInfo(CompatModIds.FTB_CHUNKS), FTBChunksCompat::new);
-		registry.registerCompat(new CompatInfo(CompatModIds.OPEN_PARTIES_AND_CLAIMS_CHUNKS), OpenPACCompat::new);
-		registry.registerCompat(new CompatInfo(CompatModIds.IRIS), IrisCompat::new);
+		registry.registerCompat(new CompatInfo(CompatModIds.CRAFTING_TWEAKS), () -> CraftingTweaksCompat::new);
+		registry.registerCompat(new CompatInfo(CompatModIds.TRASH_SLOT), () -> TrashSlotCompat::new);
+		registry.registerCompat(new CompatInfo(CompatModIds.MOUSE_TWEAKS), () -> MouseTweaksCompat::new);
+		registry.registerCompat(new CompatInfo(CompatModIds.FTB_CHUNKS), () -> FTBChunksCompat::new);
+		registry.registerCompat(new CompatInfo(CompatModIds.OPEN_PARTIES_AND_CLAIMS_CHUNKS), () -> OpenPACCompat::new);
+		registry.registerCompat(new CompatInfo(CompatModIds.IRIS), () -> IrisCompat::new);
 	}
 }

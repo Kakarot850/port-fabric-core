@@ -18,13 +18,13 @@ public class CompatRegistry {
 		return compatRegistries.computeIfAbsent(identifier, key -> new CompatRegistry());
 	}
 
-	private final Map<CompatInfo, List<Supplier<ICompat>>> compatFactories = new ConcurrentHashMap<>();
+	private final Map<CompatInfo, List<Supplier<Supplier<ICompat>>>> compatFactories = new ConcurrentHashMap<>();
 	private final Map<CompatInfo, List<ICompat>> loadedCompats = new ConcurrentHashMap<>();
 
 	protected CompatRegistry() {
 	}
 
-	public void registerCompat(CompatInfo info, Supplier<ICompat> factory) {
+	public void registerCompat(CompatInfo info, Supplier<Supplier<ICompat>> factory) {
 		compatFactories.computeIfAbsent(info, k -> new ArrayList<>()).add(factory);
 	}
 
@@ -37,7 +37,7 @@ public class CompatRegistry {
 			if (compatInfo.isLoaded()) {
 				factories.forEach(factory -> {
 					try {
-						loadedCompats.computeIfAbsent(compatInfo, k -> new ArrayList<>()).add(factory.get());
+						loadedCompats.computeIfAbsent(compatInfo, k -> new ArrayList<>()).add(factory.get().get());
 					} catch (Exception e) {
 						SophisticatedCore.LOGGER.error("Error instantiating compatibility ", e);
 					}
