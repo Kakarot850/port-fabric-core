@@ -86,6 +86,7 @@ dependencies {
 	// Exposed as api so port-fabric-storage gets them transitively from mavenLocal.
 	api "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 	api "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${project.forge_config_api_port_version}"
+	include "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${project.forge_config_api_port_version}"
 
 	// javax.annotation.* (ParametersAreNonnullByDefault, Nullable) used throughout ref-neoforge-core.
 	compileOnlyApi "com.google.code.findbugs:jsr305:${project.jsr305_version}"
