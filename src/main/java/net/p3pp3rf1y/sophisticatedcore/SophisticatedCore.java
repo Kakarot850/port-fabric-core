@@ -9,13 +9,17 @@ import net.p3pp3rf1y.sophisticatedcore.util.RecipeHelper;
 import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.fml.config.ModConfig;
 import net.p3pp3rf1y.sophisticatedcore.common.CommonEventHandler;
 import net.p3pp3rf1y.sophisticatedcore.compat.CompatRegistry;
@@ -27,6 +31,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.Nullable;
 
+import java.util.IdentityHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Fabric common entrypoint (replaces NeoForge's {@code @Mod} constructor).
  * Registries/networking/events are wired in as their subsystems are ported (see PROGRESS.md).
@@ -37,6 +47,7 @@ public class SophisticatedCore implements ModInitializer {
 	private static String networkProtocolVersion;
 	@Nullable
 	private static MinecraftServer currentServer = null;
+	private static final Map<ServerLevel, Set<ChunkPos>> PENDING_CHUNK_LOADS = new IdentityHashMap<>();
 	public final CommonEventHandler commonEventHandler = new CommonEventHandler();
 
 	@Override
@@ -59,18 +70,68 @@ public class SophisticatedCore implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> currentServer = server);
 		ServerLifecycleEvents.SERVER_STARTED.register(SophisticatedCore::serverStarted);
 		ServerLifecycleEvents.SERVER_STOPPED.register(SophisticatedCore::serverStopped);
-		ServerChunkEvents.CHUNK_LOAD.register((serverWorld, chunk, isNew) -> {
-			for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
-				blockEntity.sophisticatedCore_safeLoad();
-			}
-		});
+		// Defer block-entity onLoad out of ServerChunkEvents.CHUNK_LOAD because it runs inside ChunkStatusTasks.full;
+		// calling level.getBlockState/setBlock synchronously there deadlocks ServerChunkCache.getChunk.
+		ServerChunkEvents.CHUNK_LOAD.register((serverWorld, chunk, isNew) -> enqueuePendingChunkLoad(serverWorld, chunk.getPos()));
 		ServerChunkEvents.CHUNK_UNLOAD.register((serverWorld, chunk) -> {
+			cancelPendingChunkLoad(serverWorld, chunk.getPos());
 			for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
 				blockEntity.sophisticatedCore_safeUnload();
 			}
 		});
+		ServerTickEvents.START_LEVEL_TICK.register(SophisticatedCore::drainPendingChunkLoads);
+		ServerLevelEvents.UNLOAD.register((server, serverWorld) -> {
+			synchronized (PENDING_CHUNK_LOADS) {
+				PENDING_CHUNK_LOADS.remove(serverWorld);
+			}
+		});
 		DataResourceLoader.get().registerReloadListener(DatapackSettingsTemplateManager.Loader.KEY, DatapackSettingsTemplateManager.Loader::new);
 		CompatRegistry.getRegistry(MOD_ID).setupCompats();
+	}
+
+	public static void enqueuePendingChunkLoad(ServerLevel level, ChunkPos chunkPos) {
+		synchronized (PENDING_CHUNK_LOADS) {
+			PENDING_CHUNK_LOADS.computeIfAbsent(level, k -> new LinkedHashSet<>()).add(chunkPos);
+		}
+	}
+
+	private static void cancelPendingChunkLoad(ServerLevel level, ChunkPos chunkPos) {
+		synchronized (PENDING_CHUNK_LOADS) {
+			Set<ChunkPos> pending = PENDING_CHUNK_LOADS.get(level);
+			if (pending != null) {
+				pending.remove(chunkPos);
+				if (pending.isEmpty()) {
+					PENDING_CHUNK_LOADS.remove(level);
+				}
+			}
+		}
+	}
+
+	private static void drainPendingChunkLoads(ServerLevel level) {
+		List<ChunkPos> toLoad;
+		synchronized (PENDING_CHUNK_LOADS) {
+			Set<ChunkPos> pending = PENDING_CHUNK_LOADS.remove(level);
+			if (pending == null || pending.isEmpty()) {
+				return;
+			}
+			toLoad = List.copyOf(pending);
+		}
+		for (ChunkPos chunkPos : toLoad) {
+			LevelChunk chunk = level.getChunkSource().getChunkNow(chunkPos.x(), chunkPos.z());
+			if (chunk == null) {
+				if (level.getChunkSource().hasChunk(chunkPos.x(), chunkPos.z())) {
+					enqueuePendingChunkLoad(level, chunkPos);
+				}
+				continue;
+			}
+			if (!chunk.getBlockEntities().isEmpty()) {
+				for (BlockEntity blockEntity : List.copyOf(chunk.getBlockEntities().values())) {
+					if (!blockEntity.isRemoved()) {
+						blockEntity.sophisticatedCore_safeLoad();
+					}
+				}
+			}
+		}
 	}
 
 	private static void serverStarted(MinecraftServer server) {
@@ -82,6 +143,9 @@ public class SophisticatedCore implements ModInitializer {
 	}
 
 	private static void serverStopped(MinecraftServer server) {
+		synchronized (PENDING_CHUNK_LOADS) {
+			PENDING_CHUNK_LOADS.clear();
+		}
 		StorageWrapperRepository.clearCache();
 		RecipeHelper.clearListeners();
 		EnderLinkerEndpointRecipe.clearInFlightClaims();
