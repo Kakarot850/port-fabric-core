@@ -3,7 +3,6 @@ package net.p3pp3rf1y.sophisticatedcore.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
@@ -47,8 +46,6 @@ public class BlockHighlightRenderer {
 			}
 			return;
 		}
-		MultiBufferSource.BufferSource buffer = mc.renderBuffers().bufferSource();
-
 		if (cachedHighlightedBlocks == null) {
 			cachedHighlightedBlocks = new HashMap<>();
 			highlightedPositions.forEach((color, positionGroups) -> {
@@ -58,12 +55,12 @@ public class BlockHighlightRenderer {
 		}
 
 		cachedHighlightedBlocks.forEach((color, highlightedBlocks) -> {
-			highlightedBlocks.forEach(bh -> submitHighlightedBlock(submitNodeCollector, poseStack, partialTick, cameraPos, bh, mc, buffer, color));
+			highlightedBlocks.forEach(bh -> submitHighlightedBlock(submitNodeCollector, poseStack, partialTick, cameraPos, bh, mc, color));
 		});
 	}
 
 	private static void submitHighlightedBlock(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, float partialTick, Vec3 cameraPos,
-			HighlightedGroup bh, Minecraft mc, MultiBufferSource.BufferSource buffer, int color) {
+			HighlightedGroup bh, Minecraft mc, int color) {
 		poseStack.pushPose();
 		poseStack.translate(-cameraPos.x(), -cameraPos.y(), -cameraPos.z());
 		poseStack.translate(bh.pivot.x, bh.pivot.y, bh.pivot.z);

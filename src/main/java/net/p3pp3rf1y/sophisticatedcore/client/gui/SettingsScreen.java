@@ -442,49 +442,34 @@ public abstract class SettingsScreen extends AbstractContainerScreen<SettingsCon
 					k = -999;
 				}
 
-				if ((Boolean) this.minecraft.options.touchscreen().get() && flag1 && this.menu.getCarried().isEmpty()) {
-					this.onClose();
-					return true;
-				}
-
-				if (k != -1) {
-					if ((Boolean) this.minecraft.options.touchscreen().get()) {
-						if (slot != null && slot.hasItem()) {
-							this.clickedSlot = slot;
-							this.draggingItem = ItemStack.EMPTY;
-							this.isSplittingStack = event.button() == 1;
+				if (k != -1 && !this.isQuickCrafting) {
+					if (this.menu.getCarried().isEmpty()) {
+						if (this.minecraft.options.keyPickItem.sophisticatedCore_isActiveAndMatches(mouseKey)) {
+							this.slotClicked(slot, k, event.button(), ContainerInput.CLONE);
 						} else {
-							this.clickedSlot = null;
+							boolean flag2 = k != -999 && event.hasShiftDown();
+							ContainerInput clicktype = ContainerInput.PICKUP;
+							if (flag2) {
+								this.lastQuickMoved = slot != null && slot.hasItem() ? slot.getItem().copy() : ItemStack.EMPTY;
+								clicktype = ContainerInput.QUICK_MOVE;
+							} else if (k == -999) {
+								clicktype = ContainerInput.THROW;
+							}
+
+							this.slotClicked(slot, k, event.button(), clicktype);
 						}
-					} else if (!this.isQuickCrafting) {
-						if (this.menu.getCarried().isEmpty()) {
-							if (this.minecraft.options.keyPickItem.sophisticatedCore_isActiveAndMatches(mouseKey)) {
-								this.slotClicked(slot, k, event.button(), ContainerInput.CLONE);
-							} else {
-								boolean flag2 = k != -999 && event.hasShiftDown();
-								ContainerInput clicktype = ContainerInput.PICKUP;
-								if (flag2) {
-									this.lastQuickMoved = slot != null && slot.hasItem() ? slot.getItem().copy() : ItemStack.EMPTY;
-									clicktype = ContainerInput.QUICK_MOVE;
-								} else if (k == -999) {
-									clicktype = ContainerInput.THROW;
-								}
 
-								this.slotClicked(slot, k, event.button(), clicktype);
-							}
-
-							this.skipNextRelease = true;
-						} else {
-							this.isQuickCrafting = true;
-							this.quickCraftingButton = event.button();
-							this.quickCraftSlots.clear();
-							if (event.button() == 0) {
-								this.quickCraftingType = 0;
-							} else if (event.button() == 1) {
-								this.quickCraftingType = 1;
-							} else if (this.minecraft.options.keyPickItem.sophisticatedCore_isActiveAndMatches(mouseKey)) {
-								this.quickCraftingType = 2;
-							}
+						this.skipNextRelease = true;
+					} else {
+						this.isQuickCrafting = true;
+						this.quickCraftingButton = event.button();
+						this.quickCraftSlots.clear();
+						if (event.button() == 0) {
+							this.quickCraftingType = 0;
+						} else if (event.button() == 1) {
+							this.quickCraftingType = 1;
+						} else if (this.minecraft.options.keyPickItem.sophisticatedCore_isActiveAndMatches(mouseKey)) {
+							this.quickCraftingType = 2;
 						}
 					}
 				}

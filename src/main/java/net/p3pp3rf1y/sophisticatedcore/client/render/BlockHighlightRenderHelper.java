@@ -1,16 +1,16 @@
 package net.p3pp3rf1y.sophisticatedcore.client.render;
 
+import com.mojang.blaze3d.PrimitiveTopology;
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.rendertype.LayeringTransform;
 import net.minecraft.client.renderer.rendertype.OutputTarget;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -25,34 +25,16 @@ public class BlockHighlightRenderHelper {
 
 	public static final RenderPipeline THICK_HIGHLIGHT_PIPELINE = RenderPipeline.builder(RenderPipelines.MATRICES_FOG_SNIPPET)
 			.withVertexShader("core/position_color").withFragmentShader("core/position_color")
-			.withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS).withCull(false)
-			.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
+			.withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT)).withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR)
+			.withPrimitiveTopology(PrimitiveTopology.QUADS).withCull(false).withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
 			.withLocation(SophisticatedCore.getIdentifier("pipeline/outline_quads")).build();
 
-	public static final RenderType THICK_HIGHLIGHT_QUADS = RenderType.create("storage_outline_quads", RenderSetup.builder(THICK_HIGHLIGHT_PIPELINE)
-			.bufferSize(1536).setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING).setOutputTarget(OutputTarget.MAIN_TARGET).createRenderSetup());
+	public static final RenderType THICK_HIGHLIGHT_QUADS = RenderType.create("storage_outline_quads",
+			RenderSetup.builder(THICK_HIGHLIGHT_PIPELINE).setOutputTarget(OutputTarget.MAIN_TARGET).createRenderSetup());
 
 	public static void submitThickEdges(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, int color, List<VoxelOutliner.Edge> edges,
 			BlockPos originPos) {
 		submitThickEdges(submitNodeCollector, poseStack, color, edges, originPos.getX(), originPos.getY(), originPos.getZ());
-	}
-
-	public static void renderThickEdges(PoseStack poseStack, MultiBufferSource bufferSource, int color, List<VoxelOutliner.Edge> edges, BlockPos originPos) {
-		renderThickEdges(poseStack, bufferSource, color, edges, originPos.getX(), originPos.getY(), originPos.getZ());
-	}
-
-	public static void renderThickEdges(PoseStack poseStack, MultiBufferSource bufferSource, int color, List<VoxelOutliner.Edge> edges, double originX,
-			double originY, double originZ) {
-		if (edges.isEmpty()) {
-			return;
-		}
-
-		VertexConsumer vertexConsumer = bufferSource.getBuffer(THICK_HIGHLIGHT_QUADS);
-		PoseStack.Pose pose = poseStack.last();
-		int red = color >> 16 & 255;
-		int green = color >> 8 & 255;
-		int blue = color & 255;
-		edges.forEach(edge -> emitThickLineOrtho(vertexConsumer, pose, edge.a(), edge.b(), 1 / 32f, red, green, blue, 255, originX, originY, originZ));
 	}
 
 	public static void submitThickEdges(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, int color, List<VoxelOutliner.Edge> edges, double originX,

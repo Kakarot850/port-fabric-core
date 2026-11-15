@@ -3,7 +3,6 @@ package net.p3pp3rf1y.sophisticatedcore.client.gui;
 import com.google.common.primitives.Shorts;
 import com.google.common.primitives.SignedBytes;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.ChatFormatting;
@@ -18,7 +17,6 @@ import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -794,17 +792,13 @@ public abstract class StorageScreenBase<S extends StorageContainerMenuBase<?>> e
 		int j = slot.y;
 		ItemStack stackToRender = slot.getItem();
 		boolean flag = false;
-		boolean rightClickDragging = slot == clickedSlot && !draggingItem.isEmpty() && !isSplittingStack;
 		ItemStack carriedStack = getMenu().getCarried();
 		String stackCountText = null;
 		if (getMenu().isInfiniteSlot(slot.index)) {
 			stackCountText = "∞";
 		}
 
-		if (slot == clickedSlot && !draggingItem.isEmpty() && isSplittingStack && !stackToRender.isEmpty()) {
-			stackToRender = stackToRender.copy();
-			stackToRender.setCount(stackToRender.getCount() / 2);
-		} else if (isQuickCrafting && quickCraftSlots.contains(slot) && !carriedStack.isEmpty()) {
+		if (isQuickCrafting && quickCraftSlots.contains(slot) && !carriedStack.isEmpty()) {
 			if (quickCraftSlots.size() == 1) {
 				return;
 			}
@@ -826,7 +820,7 @@ public abstract class StorageScreenBase<S extends StorageContainerMenuBase<?>> e
 		}
 		if (stackToRender.isEmpty() && slot.isActive()) {
 			renderSlotBackground(guiGraphics, slot, i, j);
-		} else if (!rightClickDragging) {
+		} else {
 			extractStack(guiGraphics, i, j, stackToRender, flag, stackCountText);
 			slotDecorationRenderer.renderDecoration(guiGraphics, slot);
 		}
@@ -1191,49 +1185,34 @@ public abstract class StorageScreenBase<S extends StorageContainerMenuBase<?>> e
 					k = -999;
 				}
 
-				if ((Boolean) this.minecraft.options.touchscreen().get() && flag1 && this.menu.getCarried().isEmpty()) {
-					this.onClose();
-					return true;
-				}
-
-				if (k != -1) {
-					if ((Boolean) this.minecraft.options.touchscreen().get()) {
-						if (slot != null && slot.hasItem()) {
-							this.clickedSlot = slot;
-							this.draggingItem = ItemStack.EMPTY;
-							this.isSplittingStack = event.button() == 1;
+				if (k != -1 && !this.isQuickCrafting) {
+					if (this.menu.getCarried().isEmpty()) {
+						if (this.minecraft.options.keyPickItem.sophisticatedCore_isActiveAndMatches(mouseKey)) {
+							this.slotClicked(slot, k, event.button(), ContainerInput.CLONE);
 						} else {
-							this.clickedSlot = null;
+							boolean flag2 = k != -999 && event.hasShiftDown();
+							ContainerInput clicktype = ContainerInput.PICKUP;
+							if (flag2) {
+								this.lastQuickMoved = slot != null && slot.hasItem() ? slot.getItem().copy() : ItemStack.EMPTY;
+								clicktype = ContainerInput.QUICK_MOVE;
+							} else if (k == -999) {
+								clicktype = ContainerInput.THROW;
+							}
+
+							this.slotClicked(slot, k, event.button(), clicktype);
 						}
-					} else if (!this.isQuickCrafting) {
-						if (this.menu.getCarried().isEmpty()) {
-							if (this.minecraft.options.keyPickItem.sophisticatedCore_isActiveAndMatches(mouseKey)) {
-								this.slotClicked(slot, k, event.button(), ContainerInput.CLONE);
-							} else {
-								boolean flag2 = k != -999 && event.hasShiftDown();
-								ContainerInput clicktype = ContainerInput.PICKUP;
-								if (flag2) {
-									this.lastQuickMoved = slot != null && slot.hasItem() ? slot.getItem().copy() : ItemStack.EMPTY;
-									clicktype = ContainerInput.QUICK_MOVE;
-								} else if (k == -999) {
-									clicktype = ContainerInput.THROW;
-								}
 
-								this.slotClicked(slot, k, event.button(), clicktype);
-							}
-
-							this.skipNextRelease = true;
-						} else {
-							this.isQuickCrafting = true;
-							this.quickCraftingButton = event.button();
-							this.quickCraftSlots.clear();
-							if (event.button() == 0) {
-								this.quickCraftingType = 0;
-							} else if (event.button() == 1) {
-								this.quickCraftingType = 1;
-							} else if (this.minecraft.options.keyPickItem.sophisticatedCore_isActiveAndMatches(mouseKey)) {
-								this.quickCraftingType = 2;
-							}
+						this.skipNextRelease = true;
+					} else {
+						this.isQuickCrafting = true;
+						this.quickCraftingButton = event.button();
+						this.quickCraftSlots.clear();
+						if (event.button() == 0) {
+							this.quickCraftingType = 0;
+						} else if (event.button() == 1) {
+							this.quickCraftingType = 1;
+						} else if (this.minecraft.options.keyPickItem.sophisticatedCore_isActiveAndMatches(mouseKey)) {
+							this.quickCraftingType = 2;
 						}
 					}
 				}
@@ -1479,9 +1458,7 @@ public abstract class StorageScreenBase<S extends StorageContainerMenuBase<?>> e
 		int leftX = -tooltipWidth / 2;
 
 		TooltipRenderUtil.extractTooltipBackground(guiGraphics, leftX, 0, tooltipWidth, tooltipHeight, SophisticatedCore.getIdentifier("error"));
-		MultiBufferSource.BufferSource renderTypeBuffer = MultiBufferSource.immediate(new ByteBufferBuilder(1536));
 		GuiHelper.writeTooltipLines(guiGraphics, wrappedTextLines, fontrenderer, leftX, 0, ERROR_TEXT_COLOR);
-		renderTypeBuffer.endBatch();
 		pose.popMatrix();
 	}
 

@@ -59,10 +59,7 @@ transitive-accessible method net/minecraft/world/inventory/AbstractContainerMenu
 transitive-accessible method net/minecraft/world/inventory/AbstractContainerMenu synchronizeCarriedToRemote ()V
 
 # --- AbstractContainerScreen (client) ---
-transitive-accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen draggingItem Lnet/minecraft/world/item/ItemStack;
-transitive-accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen isSplittingStack Z
 transitive-accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen quickCraftingRemainder I
-transitive-accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen clickedSlot Lnet/minecraft/world/inventory/Slot;
 transitive-accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen quickCraftingType I
 transitive-accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen doubleclick Z
 transitive-accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen lastQuickMoved Lnet/minecraft/world/item/ItemStack;

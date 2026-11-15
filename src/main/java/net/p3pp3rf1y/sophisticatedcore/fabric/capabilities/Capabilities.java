@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.p3pp3rf1y.sophisticatedcore.SophisticatedCore;
 import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.ResourceHandler;
 import net.p3pp3rf1y.sophisticatedcore.fabric.transfer.access.ItemAccess;
@@ -100,22 +100,22 @@ public final class Capabilities {
 		// NeoForge CapabilityHooks#registerVanillaProviders, entity part
 		RegisterCapabilitiesEvent event = new RegisterCapabilitiesEvent();
 		var containerEntities = List.of(
-				EntityType.ACACIA_CHEST_BOAT,
-				EntityType.BIRCH_CHEST_BOAT,
-				EntityType.CHERRY_CHEST_BOAT,
-				EntityType.DARK_OAK_CHEST_BOAT,
-				EntityType.JUNGLE_CHEST_BOAT,
-				EntityType.MANGROVE_CHEST_BOAT,
-				EntityType.OAK_CHEST_BOAT,
-				EntityType.SPRUCE_CHEST_BOAT,
-				EntityType.BAMBOO_CHEST_RAFT,
-				EntityType.PALE_OAK_CHEST_BOAT,
-				EntityType.CHEST_MINECART,
-				EntityType.HOPPER_MINECART);
+				EntityTypes.ACACIA_CHEST_BOAT,
+				EntityTypes.BIRCH_CHEST_BOAT,
+				EntityTypes.CHERRY_CHEST_BOAT,
+				EntityTypes.DARK_OAK_CHEST_BOAT,
+				EntityTypes.JUNGLE_CHEST_BOAT,
+				EntityTypes.MANGROVE_CHEST_BOAT,
+				EntityTypes.OAK_CHEST_BOAT,
+				EntityTypes.SPRUCE_CHEST_BOAT,
+				EntityTypes.BAMBOO_CHEST_RAFT,
+				EntityTypes.PALE_OAK_CHEST_BOAT,
+				EntityTypes.CHEST_MINECART,
+				EntityTypes.HOPPER_MINECART);
 		for (var entityType : containerEntities) {
 			event.registerEntity(Item.ENTITY, entityType, (entity, ctx) -> VanillaContainerWrapper.of(entity));
 			event.registerEntity(Item.ENTITY_AUTOMATION, entityType, (entity, ctx) -> VanillaContainerWrapper.of(entity));
 		}
-		event.registerEntity(Item.ENTITY, EntityType.PLAYER, (player, ctx) -> PlayerInventoryWrapper.of(player.getInventory()));
+		event.registerEntity(Item.ENTITY, EntityTypes.PLAYER, (player, ctx) -> PlayerInventoryWrapper.of(player.getInventory()));
 	}
 }

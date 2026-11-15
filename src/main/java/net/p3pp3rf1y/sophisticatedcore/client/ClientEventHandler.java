@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperties;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -81,7 +82,7 @@ public class ClientEventHandler implements ClientModInitializer {
 		ModParticles.registerFactories();
 		registerFluidModels();
 		ConditionalItemModelProperties.ID_MAPPER.put(SophisticatedCore.getIdentifier("ender_linker_bound"), EnderLinkerBound.MAP_CODEC);
-		PictureInPictureRendererRegistry.register(ctx -> new ItemDisplayPreviewRenderer(ctx.bufferSource()));
+		PictureInPictureRendererRegistry.register(ctx -> new ItemDisplayPreviewRenderer());
 		KeyMappingHelper.registerKeyMapping(SORT_KEYBIND);
 		KeyMappingHelper.registerKeyMapping(TRANSFER_TO_STORAGE_KEYBIND);
 		KeyMappingHelper.registerKeyMapping(TRANSFER_TO_INVENTORY_KEYBIND);
@@ -125,7 +126,7 @@ public class ClientEventHandler implements ClientModInitializer {
 			}
 		});
 		ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipFlag, lines) -> {
-			if (!(Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> screen)) {
+			if (!(Minecraft.getInstance().gui.screen() instanceof AbstractContainerScreen<?> screen)) {
 				return;
 			}
 			Slot slot = screen.sophisticatedCore_getSlotUnderMouse();
@@ -262,7 +263,7 @@ public class ClientEventHandler implements ClientModInitializer {
 		int x = s.x;
 		int y = s.y;
 
-		int color = ARGB.opaque(stashResult == IStashStorageItem.StashResult.MATCH_AND_SPACE ? ChatFormatting.GREEN.getColor() : 0xFFFF00);
+		int color = ARGB.opaque(stashResult == IStashStorageItem.StashResult.MATCH_AND_SPACE ? TextColor.GREEN.getValue() : 0xFFFF00);
 		if (stack.getItem() instanceof IStashStorageItem) {
 			guiGraphics.text(mc.font, "+", x + 10, y + 8, color);
 		} else {

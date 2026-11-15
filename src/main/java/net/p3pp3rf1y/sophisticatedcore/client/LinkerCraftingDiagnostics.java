@@ -68,7 +68,7 @@ public final class LinkerCraftingDiagnostics {
 	}
 
 	public static void update(int containerId, List<SyncLinkerCraftingDiagnosticsPayload.Diagnostic> updatedDiagnostics) {
-		if (!(Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> screen) || screen.getMenu().containerId != containerId) {
+		if (!(Minecraft.getInstance().gui.screen() instanceof AbstractContainerScreen<?> screen) || screen.getMenu().containerId != containerId) {
 			return;
 		}
 		diagnostics.clear();
